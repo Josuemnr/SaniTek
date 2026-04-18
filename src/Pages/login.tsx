@@ -1,21 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { motion } from 'framer-motion'; // La magia de las animaciones web
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-// Asumiremos que pondrás tus componentes web en src/components/
-import { CustomInput } from '../Components/CustomImput';
+import { Globe3D } from '../Components/Globe3D';
+import { motion } from 'framer-motion';
+import { CustomImput } from '../Components/CustomImput';
+import { PrimaryButton } from '../Components/PrimaryButton';
 import { PantallaCarga } from '../Components/Pantalla_Carga';
 
-// Utilidad estándar de shadcn para fusionar clases de Tailwind
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
-
-export default function LoginScreen() {
+export default function Login() {
   const navigate = useNavigate();
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -23,109 +15,91 @@ export default function LoginScreen() {
 
   const handleLogin = () => {
     setErrorMessage('');
-    
     if (!email || !password) {
       setErrorMessage('Por favor, llena todos los campos.');
       return;
     }
-
-    setIsLoading(true); 
-
-    setTimeout(() => {
-      const mockUsers = [
-        { email: 'prueba@sanitek.com', password: '12345', role: 'Administrador' }
-      ];
-      
-      const user = mockUsers.find(
-        (u) => u.email === email.toLowerCase().trim() && u.password === password
-      );
-      
-      if (user) {
-        // En web usamos navigate en lugar de router.replace
-        navigate('/Gestion_Usuarios', { replace: true }); 
+    setIsLoading(true);
+    setTimeout(() => { //para simular datos fake de login
+      if (email === 'josue@sanitek.com' && password === '12345') {
+        navigate('/Gestion_Usuarios', { replace: true });
       } else {
-        setIsLoading(false); 
+        setIsLoading(false);
         setErrorMessage('Correo o contraseña incorrectos.');
       }
     }, 1500);
   };
 
   return (
-    <div className="flex h-screen w-full bg-slate-950 overflow-hidden relative">
-      
-      {/* IMAGEN DE FONDO ANIMADA (PLANETA ROTANDO) con Framer Motion */}
-      <motion.img
-        src="https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?q=80&w=2000&auto=format&fit=crop"
-        alt="Planeta girando"
-        className="absolute w-[150%] h-[150%] -top-[25%] -left-[25%] opacity-40 object-cover pointer-events-none"
-        // Esta línea reemplaza todo el Animated.loop y el useEffect de React Native
-        animate={{ rotate: 360 }}
-        transition={{ repeat: Infinity, duration: 120, ease: "linear" }}
-      />
-      
-      {/* Contenedor derecho para el formulario */}
-      <div className="flex-1 flex justify-center lg:justify-end items-center p-8 lg:p-24 z-10" >
-        
-        {/* TARJETA DE LOGIN con animación de entrada flotante */}
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
+    // Contenedor raíz: fondo negro espacial
+    <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden', background: '#060b1a', fontFamily: 'sans-serif' }}>
+
+      {/* GLOBO 3D DE FONDO */}
+      <Globe3D />
+
+      {/* GRADIENTE sutil para que la card se lea bien */}
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(6,11,26,0.3) 0%, transparent 50%, rgba(6,11,26,0.5) 100%)' }} />
+
+      {/* CARD — esquina inferior derecha */}
+      <div style={{ position: 'absolute', bottom: '5%', right: '4%', width: '380px', zIndex: 10 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="w-full max-w-md bg-slate-900/80 p-10 rounded-3xl border border-slate-700 shadow-2xl backdrop-blur-md"
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          style={{
+            background: 'rgba(20, 35, 90, 0.72)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRadius: '24px',
+            border: '1px solid rgba(100, 140, 255, 0.25)',
+            padding: '40px 36px',
+            boxShadow: '0 8px 40px rgba(0,0,0,0.6)',
+          }}
         >
-          <div className="mb-10">
-            <h1 className="text-3xl text-white font-bold tracking-tight">Inicia Sesión</h1>
-            <p className="text-slate-400 text-base mt-2">Plataforma de Riesgo Sanitario</p>
+          {/* Encabezado */}
+          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+            <h1 style={{ color: 'white', fontSize: '2rem', fontWeight: 700, margin: 0 }}>Inicia Sesión</h1>
+            <p style={{ color: '#a0aec0', fontSize: '0.95rem', marginTop: '8px' }}>Bienvenido de vuelta!</p>
           </div>
 
-          <div className="flex flex-col space-y-6">
-            <CustomInput
-              label="Email" 
-              placeholder="usuario@sanitek.com" 
+          {/* Inputs y botón usando tus componentes */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <CustomImput
+              label="Email"
+              placeholder="Correo"
               value={email}
               onChangeText={setEmail}
             />
-            
-            <CustomInput
-              label="Contraseña" 
-              placeholder="********" 
-              type="password" 
+            <CustomImput
+              label="Contraseña"
+              placeholder="Contraseña"
+              type="password"
               value={password}
               onChangeText={setPassword}
             />
 
             {errorMessage && (
-              <p className="text-red-400 text-sm font-medium text-center mt-2">
-                {errorMessage}
-              </p>
+              <p style={{ color: '#fc8181', fontSize: '0.85rem', textAlign: 'center', margin: 0 }}>{errorMessage}</p>
             )}
-            
-            <button 
-              onClick={handleLogin}
-              disabled={isLoading} 
-              className={cn(
-                "w-full bg-blue-600 rounded-xl h-14 shadow-lg hover:bg-blue-500 active:bg-blue-700 transition-colors flex items-center justify-center mt-2",
-                isLoading && "opacity-50 cursor-not-allowed"
-              )}
-            >
-              <span className="font-semibold italic text-white text-lg">
-                Ingresar al Sistema
-              </span>
-            </button>
 
-            <Link 
-              to="/forgot" 
-              className="mt-4 self-center text-slate-400 text-sm hover:text-white transition-colors underline-offset-4 hover:underline"
+            <PrimaryButton
+              onClick={handleLogin}
+              isLoading={isLoading}
+              text="⮕  Iniciar Sesión"
+              loadingText="Ingresando..."
+            />
+
+            <Link
+              to="/forgot" //para ir a la página de olvidar contraseña
+              style={{ display: 'block', textAlign: 'center', color: '#90cdf4', fontSize: '0.85rem', textDecoration: 'underline' }}
             >
-              ¿Olvidaste tu contraseña?
+              Forgot password?
             </Link>
           </div>
         </motion.div>
-
       </div>
 
       <PantallaCarga isVisible={isLoading} mensaje="Iniciando sesión..." />
-
     </div>
   );
 }
