@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { User, Shield, Info, Check, Bell } from 'lucide-react';
+import { Sidebar } from '../Components/Sidebar';
 import { ProfileCard } from '../Components/ProfileCard';
 import { PasswordInput } from '../Components/PasswordInput';
 import { UserAvatar } from '../Components/UserAvatar';
@@ -52,7 +53,9 @@ export default function PerfilUsuario() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8fafc', fontFamily: 'system-ui, -apple-system, sans-serif', boxSizing: 'border-box' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+      <Sidebar />
+    <div style={{ flex: 1, background: '#f8fafc', boxSizing: 'border-box' }}>
 
       {/* Page header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 32px', borderBottom: '1px solid #e5e7eb', background: 'white' }}>
@@ -176,6 +179,7 @@ export default function PerfilUsuario() {
         </div>
 
       </div>
+    </div>
     </div>
   );
 }

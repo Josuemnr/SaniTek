@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { LayoutGrid } from 'lucide-react';
+import { Sidebar } from '../Components/Sidebar';
 import { PlanCard } from '../Components/PlanCard';
 import { PaymentCard } from '../Components/PaymentCard';
 import type { CardData } from '../Components/PaymentCard';
@@ -48,7 +49,9 @@ export default function Suscrpcion() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8fafc', padding: '36px 32px', fontFamily: 'system-ui, -apple-system, sans-serif', boxSizing: 'border-box', textAlign: 'left' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+      <Sidebar />
+    <div style={{ flex: 1, background: '#f8fafc', padding: '36px 32px', boxSizing: 'border-box', textAlign: 'left' }}>
       <div style={{ maxWidth: 860, margin: '0 auto' }}>
 
         
@@ -114,6 +117,7 @@ export default function Suscrpcion() {
           onClose={() => { setModal(null); setCardToDelete(null); }}
         />
       )}
+    </div>
     </div>
   );
 }

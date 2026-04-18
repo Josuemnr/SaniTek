@@ -7,6 +7,7 @@ import GestionUsuarios from './Pages/Gestion_Usuarios';
 import Suscrpcion from './Pages/Suscrpcion';
 import PerfilUsuario from './Pages/Perfil_Usuario';
 import ForgotPassword from './Pages/forgot';
+import StorybookPage from './Pages/Storybook';
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/Suscrpcion" element={<Suscrpcion />} />
         <Route path="/Perfil_Usuario" element={<PerfilUsuario />} />
         <Route path="/forgot" element={<ForgotPassword />} />
+        <Route path="/storybook" element={<StorybookPage />} />
       </Routes>
     </BrowserRouter>
   );
