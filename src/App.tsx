@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-// Importamos tu nueva pantalla
 import Login from './Pages/login';
 import GestionUsuarios from './Pages/Gestion_Usuarios';
 import Suscrpcion from './Pages/Suscrpcion';
