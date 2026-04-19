@@ -1,0 +1,22 @@
+# Módulo: Mapa de Riesgo (Dashboard Principal)
+
+## Referencia Visual
+Ver imagen adjunta `mapa.png` en esta carpeta para diseño, colores y proporciones. Se requiere un calco 'pixel-perfect'.
+
+## Requerimientos Técnicos y Stack
+Usar React (Vite), TypeScript y Tailwind CSS. Integrar con:
+- **Aceternity UI:** Usar componentes de animación o efectos visuales para las etiquetas de riesgo o interacciones del mapa (ej. Ripples o Hover effects).
+- **Shadcn UI:** Usar para las Cards y controles de UI.
+
+## Componentes del Módulo
+1.  **Mapa Interactivo:** Debe mostrar capas de riesgo.
+    - Etiquetado visual con niveles: Bajo, Moderado, Alto, Crítico (usar los colores exactos de la imagen).
+2.  **Lista de Alcaldías (Sidebar):**
+    - Componente: Usar `Card` de Shadcn UI.
+    - Contenido: Índice por zona (Iztapalapa, Coyoacán, etc.).
+3.  **Card de Estadísticas Rápidas:**
+    - Componente: Usar `Card` de Shadcn UI.
+    - Contenido: Resumen numérico (zonas críticas, seguras, población afectada).
+4.  **Control Temporal:**
+    - Componente: Usar `Slider` de Shadcn UI o una línea de tiempo animada.
+    - Función: Ver datos históricos.
