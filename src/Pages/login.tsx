@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Globe3D } from '../Components/Globe3D';
+import { Globe3D } from '../Components/modules/login/Globe3D';
 import { motion } from 'framer-motion';
-import { CustomImput } from '../Components/CustomImput';
-import { PrimaryButton } from '../Components/PrimaryButton';
-import { PantallaCarga } from '../Components/Pantalla_Carga';
+import { CustomImput } from '../Components/modules/login/CustomImput';
+import { PrimaryButton } from '../Components/modules/login/PrimaryButton';
+import { PantallaCarga } from '../Components/modules/login/Pantalla_Carga';
 
 export default function Login() {
   const navigate = useNavigate();

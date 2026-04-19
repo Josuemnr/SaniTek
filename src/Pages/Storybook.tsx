@@ -2,22 +2,22 @@ import { useState } from 'react';
 import { CheckCircle, XCircle, Shield, Star, Zap } from 'lucide-react';
 
 import { UserAvatar }          from '../Components/UserAvatar';
-import { RoleBadge }           from '../Components/RoleBadge';
-import { PaymentStatusBadge }  from '../Components/PaymentStatusBadge';
-import { FilterTab }           from '../Components/FilterTab';
-import { PaginationBar }       from '../Components/PaginationBar';
-import { CustomImput }         from '../Components/CustomImput';
-import { PasswordInput }       from '../Components/PasswordInput';
-import { AddPaymentCard }      from '../Components/AddPaymentCard';
-import { PaymentCard }         from '../Components/PaymentCard';
-import type { CardData }       from '../Components/PaymentCard';
-import { PlanFeatureItem }     from '../Components/PlanFeatureItem';
-import { PlanCard }            from '../Components/PlanCard';
-import { ProfileCard }         from '../Components/ProfileCard';
-import { PaymentHistoryTable } from '../Components/PaymentHistoryTable';
-import type { PaymentRecord }  from '../Components/PaymentHistoryTable';
-import { ConfirmModal }        from '../Components/ConfirmModal';
-import { AddCardModal }        from '../Components/AddCardModal';
+import { RoleBadge }           from '../Components/modules/gestion_usuarios/RoleBadge';
+import { PaymentStatusBadge }  from '../Components/modules/suscrpcion/PaymentStatusBadge';
+import { FilterTab }           from '../Components/modules/gestion_usuarios/FilterTab';
+import { PaginationBar }       from '../Components/modules/gestion_usuarios/PaginationBar';
+import { CustomImput }         from '../Components/modules/login/CustomImput';
+import { PasswordInput }       from '../Components/modules/perfil_usuario/PasswordInput';
+import { AddPaymentCard }      from '../Components/modules/suscrpcion/AddPaymentCard';
+import { PaymentCard }         from '../Components/modules/suscrpcion/PaymentCard';
+import type { CardData }       from '../Components/modules/suscrpcion/PaymentCard';
+import { PlanFeatureItem }     from '../Components/modules/suscrpcion/PlanFeatureItem';
+import { PlanCard }            from '../Components/modules/suscrpcion/PlanCard';
+import { ProfileCard }         from '../Components/modules/perfil_usuario/ProfileCard';
+import { PaymentHistoryTable } from '../Components/modules/suscrpcion/PaymentHistoryTable';
+import type { PaymentRecord }  from '../Components/modules/suscrpcion/PaymentHistoryTable';
+import { ConfirmModal }        from '../Components/modules/suscrpcion/ConfirmModal';
+import { AddCardModal }        from '../Components/modules/suscrpcion/AddCardModal';
 
 const SECTIONS = [
   'UserAvatar', 'RoleBadge', 'PaymentStatusBadge',

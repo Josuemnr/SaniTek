@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { User, Shield, Info, Check, Bell } from 'lucide-react';
 import { Sidebar } from '../Components/Sidebar';
-import { ProfileCard } from '../Components/ProfileCard';
-import { PasswordInput } from '../Components/PasswordInput';
+import { ProfileCard } from '../Components/modules/perfil_usuario/ProfileCard';
+import { PasswordInput } from '../Components/modules/perfil_usuario/PasswordInput';
 import { UserAvatar } from '../Components/UserAvatar';
 
 const inputStyle: React.CSSProperties = {

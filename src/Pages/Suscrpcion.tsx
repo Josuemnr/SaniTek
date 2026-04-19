@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { LayoutGrid } from 'lucide-react';
 import { Sidebar } from '../Components/Sidebar';
-import { PlanCard } from '../Components/PlanCard';
-import { PaymentCard } from '../Components/PaymentCard';
-import type { CardData } from '../Components/PaymentCard';
-import { AddPaymentCard } from '../Components/AddPaymentCard';
-import { PaymentHistoryTable } from '../Components/PaymentHistoryTable';
-import type { PaymentRecord } from '../Components/PaymentHistoryTable';
-import { AddCardModal } from '../Components/AddCardModal';
-import { ConfirmModal } from '../Components/ConfirmModal';
+import { PlanCard } from '../Components/modules/suscrpcion/PlanCard';
+import { PaymentCard } from '../Components/modules/suscrpcion/PaymentCard';
+import type { CardData } from '../Components/modules/suscrpcion/PaymentCard';
+import { AddPaymentCard } from '../Components/modules/suscrpcion/AddPaymentCard';
+import { PaymentHistoryTable } from '../Components/modules/suscrpcion/PaymentHistoryTable';
+import type { PaymentRecord } from '../Components/modules/suscrpcion/PaymentHistoryTable';
+import { AddCardModal } from '../Components/modules/suscrpcion/AddCardModal';
+import { ConfirmModal } from '../Components/modules/suscrpcion/ConfirmModal';
 
 const INITIAL_CARDS: CardData[] = [
   { id: 1, last4: '4242', holder: 'Josue M', expiry: '08/27', isDefault: true },

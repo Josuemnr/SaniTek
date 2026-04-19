@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, ArrowLeft, CheckCircle, RefreshCw } from 'lucide-react';
-import { Globe3D } from '../Components/Globe3D';
-import { CustomImput } from '../Components/CustomImput';
-import { PrimaryButton } from '../Components/PrimaryButton';
+import { Globe3D } from '../Components/modules/login/Globe3D';
+import { CustomImput } from '../Components/modules/login/CustomImput';
+import { PrimaryButton } from '../Components/modules/login/PrimaryButton';
 
 type Step = 'email' | 'success';
 
