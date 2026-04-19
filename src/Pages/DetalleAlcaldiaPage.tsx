@@ -1,21 +1,19 @@
 import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useRiskStore } from "@/store/useRiskStore";
 import { getDetalleAlcaldia } from "@/components/modules/detalle-alcaldia/detalle-alcaldia-data";
 import { IRSACard } from "@/components/modules/detalle-alcaldia/IRSACard";
 import { VariablesGrid } from "@/components/modules/detalle-alcaldia/VariablesGrid";
 
-interface DetalleAlcaldiaPageProps {
-  onNavigate: (screen: string) => void;
-}
-
-export function DetalleAlcaldiaPage({ onNavigate }: DetalleAlcaldiaPageProps) {
+export function DetalleAlcaldiaPage() {
+  const navigate = useNavigate();
   const { selectedAlcaldia } = useRiskStore();
   const detalle = getDetalleAlcaldia(selectedAlcaldia ?? "");
 
   return (
     <div className="flex flex-col h-full bg-gray-100 p-6 gap-5 overflow-y-auto">
       <button
-        onClick={() => onNavigate("Mapa de Riesgo")}
+        onClick={() => navigate("/")}
         className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-800 transition-colors w-fit"
       >
         <ArrowLeft className="w-3.5 h-3.5" />

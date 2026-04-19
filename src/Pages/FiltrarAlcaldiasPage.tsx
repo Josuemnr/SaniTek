@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import {
   ZONAS_MOCK,
   filterZonas,
@@ -10,11 +11,8 @@ import { FilterBar } from "@/components/modules/filtrar-alcaldias/FilterBar";
 import { AlcaldiasList } from "@/components/modules/filtrar-alcaldias/AlcaldiasList";
 import { EstadisticasRapidas } from "@/components/modules/filtrar-alcaldias/EstadisticasRapidas";
 
-interface FiltrarAlcaldiasPageProps {
-  onNavigate?: (screen: string) => void;
-}
-
-export function FiltrarAlcaldiasPage({ onNavigate }: FiltrarAlcaldiasPageProps) {
+export function FiltrarAlcaldiasPage() {
+  const navigate = useNavigate();
   const [activeFilters, setActiveFilters] = useState<FilterType[]>([]);
 
   const zonasFiltradas = useMemo(
@@ -36,7 +34,7 @@ export function FiltrarAlcaldiasPage({ onNavigate }: FiltrarAlcaldiasPageProps) 
   return (
     <div className="flex flex-col h-full bg-gray-100 p-6 gap-4 overflow-hidden">
       <button
-        onClick={() => onNavigate?.("Mapa de Riesgo")}
+        onClick={() => navigate("/")}
         className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-800 transition-colors w-fit"
       >
         <ArrowLeft className="w-3.5 h-3.5" />

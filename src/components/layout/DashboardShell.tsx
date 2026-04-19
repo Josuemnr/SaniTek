@@ -1,4 +1,4 @@
-import React from 'react';
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Settings, LogOut, Search, Bell } from "lucide-react";
 import logo from '@/assets/logo.png';
@@ -25,17 +25,13 @@ const SidebarItem = ({ icon: Icon, label, active }: SidebarItemProps) => (
   </div>
 );
 
-interface DashboardShellProps {
-  activeItem: string;
-  onNavChange: (item: string) => void;
-  children: React.ReactNode;
-}
+export function DashboardShell() {
+  const { pathname } = useLocation();
 
-export function DashboardShell({ activeItem, onNavChange, children }: DashboardShellProps) {
-  const activeLink = NAV_LINKS.find((l) => l.title === activeItem);
-  const screenConfig = SCREEN_CONFIGS[activeItem];
-  const pageTitle = activeLink?.pageTitle ?? screenConfig?.pageTitle ?? activeItem;
-  const subtitle = activeLink?.subtitle ?? screenConfig?.subtitle;
+  const activeLink = NAV_LINKS.find((l) => l.href === pathname);
+  const screenConfig = SCREEN_CONFIGS[pathname];
+  const pageTitle = activeLink?.pageTitle ?? screenConfig?.pageTitle ?? "";
+  const subtitle  = activeLink?.subtitle  ?? screenConfig?.subtitle;
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background">
@@ -48,13 +44,13 @@ export function DashboardShell({ activeItem, onNavChange, children }: DashboardS
 
         <nav className="flex-1 flex flex-col gap-1">
           {NAV_LINKS.map((item) => (
-            <div key={item.title} onClick={() => onNavChange(item.title)}>
+            <Link key={item.title} to={item.href} className="no-underline">
               <SidebarItem
                 icon={item.icon}
                 label={item.title}
-                active={activeItem === item.title}
+                active={pathname === item.href}
               />
-            </div>
+            </Link>
           ))}
         </nav>
 
@@ -100,7 +96,7 @@ export function DashboardShell({ activeItem, onNavChange, children }: DashboardS
         </header>
 
         <main className="flex-1 overflow-hidden">
-          {children}
+          <Outlet />
         </main>
       </div>
     </div>

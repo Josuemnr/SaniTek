@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
@@ -33,11 +34,8 @@ const ALCALDIAS = [
 
 const RISK_LEVELS = ["Bajo", "Normal", "Moderado", "Alto", "Crítico"]
 
-interface SidebarAlcaldiasProps {
-  onNavigate?: (screen: string) => void;
-}
-
-export function SidebarAlcaldias({ onNavigate }: SidebarAlcaldiasProps) {
+export function SidebarAlcaldias() {
+  const navigate = useNavigate()
   const { selectedAlcaldia, setSelectedAlcaldia } = useRiskStore()
 
   return (
@@ -48,9 +46,9 @@ export function SidebarAlcaldias({ onNavigate }: SidebarAlcaldiasProps) {
           Alcaldías
         </CardTitle>
         {selectedAlcaldia && (
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="h-8 w-8 rounded-full"
             onClick={() => setSelectedAlcaldia(null)}
           >
@@ -64,7 +62,7 @@ export function SidebarAlcaldias({ onNavigate }: SidebarAlcaldiasProps) {
             {ALCALDIAS.map((alcaldia, index) => {
               const riskLevel = RISK_LEVELS[index % RISK_LEVELS.length]
               const isSelected = selectedAlcaldia === alcaldia
-              
+
               return (
                 <div
                   key={alcaldia}
@@ -88,22 +86,20 @@ export function SidebarAlcaldias({ onNavigate }: SidebarAlcaldiasProps) {
                       {isSelected ? "Seleccionado" : riskLevel}
                     </Badge>
 
-                    <TooltipProvider delayDuration={300}>
+                    <TooltipProvider delay={300}>
                       <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedAlcaldia(alcaldia);
-                              onNavigate?.("Detalle Alcaldía");
-                            }}
-                            className={cn(
-                              "opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-black/10",
-                              isSelected && "hover:bg-white/20"
-                            )}
-                          >
-                            <MoreHorizontal className="w-4 h-4" />
-                          </button>
+                        <TooltipTrigger
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setSelectedAlcaldia(alcaldia)
+                            navigate("/detalle")
+                          }}
+                          className={cn(
+                            "opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-black/10",
+                            isSelected && "hover:bg-white/20"
+                          )}
+                        >
+                          <MoreHorizontal className="w-4 h-4" />
                         </TooltipTrigger>
                         <TooltipContent side="right">
                           <p>Ver más detalles</p>

@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { SlidersHorizontal } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { APIProvider, Map, useMap } from "@vis.gl/react-google-maps";
 import { Button } from "@/components/ui/button";
 import { DeckProps } from "@deck.gl/core";
@@ -59,11 +60,8 @@ function MapCenterHandler({ selectedAlcaldia }: { selectedAlcaldia: string | nul
   return null;
 }
 
-interface RiskMapPageProps {
-  onNavigate?: (screen: string) => void;
-}
-
-export function RiskMapPage({ onNavigate }: RiskMapPageProps) {
+export function RiskMapPage() {
+  const navigate = useNavigate();
   const { riskPoints, currentTime, selectedAlcaldia } = useRiskStore();
 
   const filteredPoints = useMemo(() => {
@@ -112,7 +110,7 @@ export function RiskMapPage({ onNavigate }: RiskMapPageProps) {
       <BackgroundBeams className="opacity-40" />
 
       <div className="relative z-10">
-        <SidebarAlcaldias onNavigate={onNavigate} />
+        <SidebarAlcaldias />
       </div>
 
       <div className="flex-1 flex flex-col gap-4 relative">
@@ -143,7 +141,7 @@ export function RiskMapPage({ onNavigate }: RiskMapPageProps) {
             variant="secondary"
             size="sm"
             className="h-9 gap-2 shadow-md shrink-0"
-            onClick={() => onNavigate?.("Filtrar Alcaldías")}
+            onClick={() => navigate("/filtrar")}
           >
             <SlidersHorizontal className="w-4 h-4" />
             Filtros
