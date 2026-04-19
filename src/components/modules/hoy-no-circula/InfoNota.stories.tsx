@@ -11,11 +11,31 @@ export default meta;
 
 type Story = StoryObj<typeof InfoNota>;
 
-export const Default: Story = {
-  name: "Nota informativa",
+export const Ancho: Story = {
+  name: "Ancho completo",
 };
 
-export const ConFondoOscuro: Story = {
-  name: "Sobre fondo gris",
-  parameters: { backgrounds: { default: "light-gray" } },
+export const Estrecho: Story = {
+  name: "En contenedor estrecho (como en móvil)",
+  decorators: [
+    (Story) => (
+      <div style={{ maxWidth: 280 }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
+
+export const ContenedorConTarjetas: Story = {
+  name: "En contexto — debajo de tarjetas",
+  decorators: [
+    (Story) => (
+      <div className="flex flex-col gap-3 w-80">
+        <div className="bg-white rounded-xl border border-gray-200 p-4 text-sm text-gray-500">
+          Tarjeta de ejemplo arriba
+        </div>
+        <Story />
+      </div>
+    ),
+  ],
 };

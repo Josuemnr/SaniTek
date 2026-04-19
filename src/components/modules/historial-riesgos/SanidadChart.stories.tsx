@@ -20,16 +20,10 @@ export default meta;
 type Story = StoryObj<typeof SanidadChart>;
 
 export const DatosCDMX: Story = {
-  name: "Datos CDMX — 12 meses",
+  name: "CDMX — año completo (pico en Sep)",
   args: { data: DATA_CDMX },
 };
 
-export const UltimoSemestre: Story = {
-  name: "Últimos 6 meses",
-  args: { data: DATA_CDMX.slice(6) },
-};
 
-export const PrimerTrimestre: Story = {
-  name: "Primer trimestre",
-  args: { data: DATA_CDMX.slice(0, 3) },
-};
+
+

@@ -4,7 +4,7 @@ import { QuickStatsCard } from "./QuickStatsCard";
 const meta: Meta<typeof QuickStatsCard> = {
   title: "Módulos/Risk Map/QuickStatsCard",
   component: QuickStatsCard,
-  parameters: { layout: "padded", backgrounds: { default: "dark" } },
+  parameters: { layout: "padded" },
   tags: ["autodocs"],
 };
 export default meta;
@@ -12,10 +12,27 @@ export default meta;
 type Story = StoryObj<typeof QuickStatsCard>;
 
 export const Default: Story = {
-  name: "Tarjetas de estadísticas rápidas",
+  name: "Estadísticas normales",
 };
 
-export const SobreFondoClaro: Story = {
-  name: "Sobre fondo claro",
-  parameters: { backgrounds: { default: "white" } },
+export const EnContextoMapa: Story = {
+  name: "Sobre overlay oscuro (como aparece en el mapa)",
+  decorators: [
+    (Story) => (
+      <div className="bg-gray-900 p-8 rounded-xl">
+        <Story />
+      </div>
+    ),
+  ],
+};
+
+export const EnContenedorEstrecho: Story = {
+  name: "En contenedor estrecho",
+  decorators: [
+    (Story) => (
+      <div style={{ maxWidth: 240 }}>
+        <Story />
+      </div>
+    ),
+  ],
 };
