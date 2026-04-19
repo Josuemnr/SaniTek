@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import Login from './Pages/login';
@@ -7,7 +6,7 @@ import Suscrpcion from './Pages/Suscrpcion';
 import PerfilUsuario from './Pages/Perfil_Usuario';
 import ForgotPassword from './Pages/forgot';
 import StorybookPage from './Pages/Storybook';
-import { DashboardShell } from "@/components/layout/DashboardShell";
+import { DashboardShell }       from "@/components/layout/DashboardShell";
 import { RiskMapPage }          from "@/Pages/RiskMapPage";
 import { HoyNoCirculaPage }     from "@/Pages/HoyNoCirculaPage";
 import { FiltrarAlcaldiasPage } from "@/Pages/FiltrarAlcaldiasPage";
@@ -18,12 +17,12 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="/login"            element={<Login />} />
         <Route path="/Gestion_Usuarios" element={<GestionUsuarios />} />
-        <Route path="/Suscrpcion" element={<Suscrpcion />} />
-        <Route path="/Perfil_Usuario" element={<PerfilUsuario />} />
-        <Route path="/forgot" element={<ForgotPassword />} />
-        <Route path="/storybook" element={<StorybookPage />} />
+        <Route path="/Suscrpcion"       element={<Suscrpcion />} />
+        <Route path="/Perfil_Usuario"   element={<PerfilUsuario />} />
+        <Route path="/forgot"           element={<ForgotPassword />} />
+        <Route path="/storybook"        element={<StorybookPage />} />
         <Route element={<DashboardShell />}>
           <Route path="/"               element={<RiskMapPage />} />
           <Route path="/historial"      element={<HistorialRiesgosPage />} />

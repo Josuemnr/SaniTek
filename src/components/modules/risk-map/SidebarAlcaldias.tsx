@@ -1,10 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, X } from "lucide-react"
+import { MapPin, X, MoreHorizontal } from "lucide-react"
 import { useRiskStore } from "@/store/useRiskStore"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 const ALCALDIAS = [
   "Álvaro Obregón",
@@ -27,7 +33,11 @@ const ALCALDIAS = [
 
 const RISK_LEVELS = ["Bajo", "Normal", "Moderado", "Alto", "Crítico"]
 
-export function SidebarAlcaldias() {
+interface SidebarAlcaldiasProps {
+  onNavigate?: (screen: string) => void;
+}
+
+export function SidebarAlcaldias({ onNavigate }: SidebarAlcaldiasProps) {
   const { selectedAlcaldia, setSelectedAlcaldia } = useRiskStore()
 
   return (
@@ -60,21 +70,47 @@ export function SidebarAlcaldias() {
                   key={alcaldia}
                   onClick={() => setSelectedAlcaldia(isSelected ? null : alcaldia)}
                   className={cn(
-                    "flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors",
-                    isSelected 
-                      ? "bg-primary text-primary-foreground" 
+                    "group flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors",
+                    isSelected
+                      ? "bg-primary text-primary-foreground"
                       : "hover:bg-accent/50"
                   )}
                   role="button"
                   aria-pressed={isSelected}
                 >
                   <span className="text-sm font-medium">{alcaldia}</span>
-                  <Badge 
-                    variant={isSelected ? "secondary" : (riskLevel === "Crítico" || riskLevel === "Alto" ? "destructive" : "outline")}
-                    className={cn(isSelected && "bg-white text-primary hover:bg-white/90")}
-                  >
-                    {isSelected ? "Seleccionado" : riskLevel}
-                  </Badge>
+
+                  <div className="flex items-center gap-1.5">
+                    <Badge
+                      variant={isSelected ? "secondary" : (riskLevel === "Crítico" || riskLevel === "Alto" ? "destructive" : "outline")}
+                      className={cn(isSelected && "bg-white text-primary hover:bg-white/90")}
+                    >
+                      {isSelected ? "Seleccionado" : riskLevel}
+                    </Badge>
+
+                    <TooltipProvider delayDuration={300}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedAlcaldia(alcaldia);
+                              onNavigate?.("Detalle Alcaldía");
+                            }}
+                            className={cn(
+                              "opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-black/10",
+                              isSelected && "hover:bg-white/20"
+                            )}
+                          >
+                            <MoreHorizontal className="w-4 h-4" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">
+                          <p>Ver más detalles</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </div>
               )
             })}

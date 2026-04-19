@@ -18,7 +18,7 @@ const SidebarItem = ({ icon: Icon, label, active }: SidebarItemProps) => (
     "flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors",
     active
       ? "bg-sidebar-accent text-sidebar-foreground font-bold shadow-sm"
-      : "hover:bg-sidebar-accent/30 text-sidebar-foreground/80 hover:text-sidebar-foreground"
+      : "hover:bg-sidebar-accent/30 text-gray-700 hover:text-gray-900"
   )}>
     <Icon className="size-5" />
     <span className="font-medium text-sm">{label}</span>

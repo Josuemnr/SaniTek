@@ -122,7 +122,7 @@ export function RiskMapContainer({ onNavigate }: RiskMapContainerProps) {
       
       {/* Sidebar */}
       <div className="relative z-10">
-        <SidebarAlcaldias />
+        <SidebarAlcaldias onNavigate={onNavigate} />
       </div>
 
       {/* Main Content Area */}

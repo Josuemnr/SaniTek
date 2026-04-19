@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { ArrowLeft } from "lucide-react";
 import {
   ZONAS_MOCK,
   filterZonas,
@@ -9,7 +10,11 @@ import { FilterBar } from "./FilterBar";
 import { AlcaldiasList } from "./AlcaldiasList";
 import { EstadisticasRapidas } from "./EstadisticasRapidas";
 
-export function FiltrarAlcaldiasContainer() {
+interface FiltrarAlcaldiasContainerProps {
+  onNavigate?: (screen: string) => void;
+}
+
+export function FiltrarAlcaldiasContainer({ onNavigate }: FiltrarAlcaldiasContainerProps) {
   const [activeFilters, setActiveFilters] = useState<FilterType[]>([]);
 
   const zonasFiltradas = useMemo(
@@ -30,6 +35,14 @@ export function FiltrarAlcaldiasContainer() {
 
   return (
     <div className="flex flex-col h-full bg-gray-100 p-6 gap-4 overflow-hidden">
+      <button
+        onClick={() => onNavigate?.("Mapa de Riesgo")}
+        className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-800 transition-colors w-fit"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" />
+        Volver al mapa
+      </button>
+
       <div className="bg-white rounded-xl border border-gray-200 px-5 py-3 shrink-0">
         <FilterBar
           activeFilters={activeFilters}

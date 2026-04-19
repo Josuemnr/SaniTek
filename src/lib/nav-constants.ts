@@ -14,6 +14,10 @@ export const SCREEN_CONFIGS: Record<string, { pageTitle: string; subtitle: strin
     pageTitle: "Alcaldías y municipios",
     subtitle: "Informe detallado",
   },
+  "Detalle Alcaldía": {
+    pageTitle: "Detalle por Alcaldía",
+    subtitle: "Variables críticas y riesgo sanitario",
+  },
 };
 
 export const NAV_LINKS: NavLink[] = [
