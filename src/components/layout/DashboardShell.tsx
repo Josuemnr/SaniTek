@@ -55,19 +55,23 @@ export function DashboardShell() {
         </nav>
 
         <div className="mt-auto flex flex-col gap-4 border-t pt-4">
-          <div className="flex items-center gap-3 px-2 py-2">
-            <Avatar className="h-9 w-9 border">
-              <AvatarImage src="" />
-              <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">CM</AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col overflow-hidden">
-              <span className="text-xs font-bold truncate">Carlos Méndez</span>
-              <span className="text-[10px] text-muted-foreground truncate">Gerente logística</span>
+          <Link to="/Perfil_Usuario" className="no-underline">
+            <div className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-sidebar-accent/30 cursor-pointer transition-colors">
+              <Avatar className="h-9 w-9 border">
+                <AvatarImage src="" />
+                <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">CM</AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col overflow-hidden">
+                <span className="text-xs font-bold truncate text-gray-700">Carlos Méndez</span>
+                <span className="text-[10px] text-muted-foreground truncate">Gerente logística</span>
+              </div>
             </div>
-          </div>
+          </Link>
           <div className="flex flex-col gap-1">
             <SidebarItem icon={Settings} label="Configuración" />
-            <SidebarItem icon={LogOut} label="Cerrar sesión" />
+            <Link to="/login" className="no-underline">
+              <SidebarItem icon={LogOut} label="Cerrar sesión" />
+            </Link>
           </div>
         </div>
       </aside>
