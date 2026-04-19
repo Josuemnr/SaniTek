@@ -1,0 +1,47 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "Cuauhtémoc" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-99.1436, 19.4608],
+          [-99.1165, 19.4608],
+          [-99.1165, 19.4026],
+          [-99.1436, 19.4026],
+          [-99.1436, 19.4608]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Benito Juárez" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-99.1764, 19.4026],
+          [-99.1352, 19.4026],
+          [-99.1352, 19.3567],
+          [-99.1764, 19.3567],
+          [-99.1764, 19.4026]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Coyoacán" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-99.1911, 19.3567],
+          [-99.1000, 19.3567],
+          [-99.1000, 19.2700],
+          [-99.1911, 19.2700],
+          [-99.1911, 19.3567]
+        ]]
+      }
+    }
+  ]
+}
