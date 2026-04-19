@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronDown } from 'lucide-react';
-import { UserAvatar } from './UserAvatar';
+import { UserAvatar } from '../../UserAvatar';
 import type { User } from './UserRow';
 
 interface Props {
@@ -65,7 +65,7 @@ export const EditUserPanel: React.FC<Props> = ({ user, onClose }) => {
         <div style={{ position: 'relative' }}>
           <select
             value={selectedRole}
-            onChange={e => setSelectedRole(e.target.value)}
+            onChange={e => setSelectedRole(e.target.value as typeof ROLES[number])}
             style={{
               width: '100%',
               appearance: 'none',

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Globe3D } from '../Components/Globe3D';
+import { Globe3D } from '../Components/modules/login/Globe3D';
 import { motion } from 'framer-motion';
-import { CustomImput } from '../Components/CustomImput';
-import { PrimaryButton } from '../Components/PrimaryButton';
-import { PantallaCarga } from '../Components/Pantalla_Carga';
+import { CustomImput } from '../Components/modules/login/CustomImput';
+import { PrimaryButton } from '../Components/modules/login/PrimaryButton';
+import { PantallaCarga } from '../Components/modules/login/Pantalla_Carga';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -31,16 +31,11 @@ export default function Login() {
   };
 
   return (
-    // Contenedor raíz: fondo negro espacial
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden', background: '#060b1a', fontFamily: 'sans-serif' }}>
 
-      {/* GLOBO 3D DE FONDO */}
+      {/* GLOBO 3D DE FONDO, importado */}
       <Globe3D />
-
-      {/* GRADIENTE sutil para que la card se lea bien */}
       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(6,11,26,0.3) 0%, transparent 50%, rgba(6,11,26,0.5) 100%)' }} />
-
-      {/* CARD — esquina inferior derecha */}
       <div style={{ position: 'absolute', bottom: '5%', right: '4%', width: '380px', zIndex: 10 }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -62,7 +57,7 @@ export default function Login() {
             <p style={{ color: '#a0aec0', fontSize: '0.95rem', marginTop: '8px' }}>Bienvenido de vuelta!</p>
           </div>
 
-          {/* Inputs y botón usando tus componentes */}
+          {/* Inputs y botón con los componetes */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <CustomImput
               label="Email"

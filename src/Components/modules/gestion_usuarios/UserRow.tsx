@@ -1,6 +1,6 @@
 import React from 'react';
 import { Edit2, MoreVertical } from 'lucide-react';
-import { UserAvatar } from './UserAvatar';
+import { UserAvatar } from '../../UserAvatar';
 import { RoleBadge } from './RoleBadge';
 import type { Role } from './RoleBadge';
 

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Search, CheckCircle, XCircle, Shield, Plus } from 'lucide-react';
-import { FilterTab } from '../Components/FilterTab';
-import { UserRow } from '../Components/UserRow';
-import type { User } from '../Components/UserRow';
-import { PaginationBar } from '../Components/PaginationBar';
-import { EditUserPanel } from '../Components/EditUserPanel';
-import { NewUserModal } from '../Components/NewUserModal';
+import { FilterTab } from '../Components/modules/gestion_usuarios/FilterTab';
+import { UserRow } from '../Components/modules/gestion_usuarios/UserRow';
+import type { User } from '../Components/modules/gestion_usuarios/UserRow';
+import { PaginationBar } from '../Components/modules/gestion_usuarios/PaginationBar';
+import { EditUserPanel } from '../Components/modules/gestion_usuarios/EditUserPanel';
+import { NewUserModal } from '../Components/modules/gestion_usuarios/NewUserModal';
 import { Sidebar } from '../Components/Sidebar';
 
 type FilterType = 'Activos' | 'Inactivos' | 'Administradores';

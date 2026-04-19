@@ -2,24 +2,22 @@ import { useState } from 'react';
 import { CheckCircle, XCircle, Shield, Star, Zap } from 'lucide-react';
 
 import { UserAvatar }          from '../Components/UserAvatar';
-import { RoleBadge }           from '../Components/RoleBadge';
-import { PaymentStatusBadge }  from '../Components/PaymentStatusBadge';
-import { FilterTab }           from '../Components/FilterTab';
-import { PaginationBar }       from '../Components/PaginationBar';
-import { CustomImput }         from '../Components/CustomImput';
-import { PasswordInput }       from '../Components/PasswordInput';
-import { AddPaymentCard }      from '../Components/AddPaymentCard';
-import { PaymentCard }         from '../Components/PaymentCard';
-import type { CardData }       from '../Components/PaymentCard';
-import { PlanFeatureItem }     from '../Components/PlanFeatureItem';
-import { PlanCard }            from '../Components/PlanCard';
-import { ProfileCard }         from '../Components/ProfileCard';
-import { PaymentHistoryTable } from '../Components/PaymentHistoryTable';
-import type { PaymentRecord }  from '../Components/PaymentHistoryTable';
-import { ConfirmModal }        from '../Components/ConfirmModal';
-import { AddCardModal }        from '../Components/AddCardModal';
-
-// ─── helpers ─────────────────────────────────────────────────────────────────
+import { RoleBadge }           from '../Components/modules/gestion_usuarios/RoleBadge';
+import { PaymentStatusBadge }  from '../Components/modules/suscrpcion/PaymentStatusBadge';
+import { FilterTab }           from '../Components/modules/gestion_usuarios/FilterTab';
+import { PaginationBar }       from '../Components/modules/gestion_usuarios/PaginationBar';
+import { CustomImput }         from '../Components/modules/login/CustomImput';
+import { PasswordInput }       from '../Components/modules/perfil_usuario/PasswordInput';
+import { AddPaymentCard }      from '../Components/modules/suscrpcion/AddPaymentCard';
+import { PaymentCard }         from '../Components/modules/suscrpcion/PaymentCard';
+import type { CardData }       from '../Components/modules/suscrpcion/PaymentCard';
+import { PlanFeatureItem }     from '../Components/modules/suscrpcion/PlanFeatureItem';
+import { PlanCard }            from '../Components/modules/suscrpcion/PlanCard';
+import { ProfileCard }         from '../Components/modules/perfil_usuario/ProfileCard';
+import { PaymentHistoryTable } from '../Components/modules/suscrpcion/PaymentHistoryTable';
+import type { PaymentRecord }  from '../Components/modules/suscrpcion/PaymentHistoryTable';
+import { ConfirmModal }        from '../Components/modules/suscrpcion/ConfirmModal';
+import { AddCardModal }        from '../Components/modules/suscrpcion/AddCardModal';
 
 const SECTIONS = [
   'UserAvatar', 'RoleBadge', 'PaymentStatusBadge',
@@ -37,8 +35,6 @@ const SAMPLE_RECORDS: PaymentRecord[] = [
   { id: 2, date: '10 Feb 2026', description: 'Suscripción Premium - Mensual', status: 'Pendiente', amount: 17000 },
   { id: 3, date: '10 Ene 2026', description: 'Suscripción Premium - Mensual', status: 'Fallido',   amount: 17000 },
 ];
-
-// ─── sub-components ───────────────────────────────────────────────────────────
 
 const Section: React.FC<{ id: string; title: string; description: string; children: React.ReactNode }> =
   ({ id, title, description, children }) => (
@@ -67,21 +63,18 @@ const Row: React.FC<{ label: string; children: React.ReactNode; dark?: boolean }
       </div>
     </div>
   );
-
-// ─── main page ────────────────────────────────────────────────────────────────
-
 export default function StorybookPage() {
-  // FilterTab state
+  // FilterTab 
   const [activeFilter, setActiveFilter] = useState<string>('Activos');
 
-  // PaginationBar state
+  // PaginationBar 
   const [page, setPage] = useState(1);
 
-  // CustomImput state
+  // CustomImput 
   const [inputVal, setInputVal] = useState('');
   const [pwdVal,   setPwdVal]   = useState('');
 
-  // PasswordInput state
+  // PasswordInput 
   const [pwdA, setPwdA] = useState('');
   const [pwdB, setPwdB] = useState('');
 
@@ -96,7 +89,6 @@ export default function StorybookPage() {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'system-ui, -apple-system, sans-serif', background: '#f8fafc' }}>
 
-      {/* ── Left nav ── */}
       <aside style={{
         width: 210, minWidth: 210, position: 'sticky', top: 0, height: '100vh',
         background: 'white', borderRight: '1px solid #e5e7eb',
@@ -138,11 +130,7 @@ export default function StorybookPage() {
           ))}
         </nav>
       </aside>
-
-      {/* ── Content ── */}
       <main style={{ flex: 1, padding: '40px 48px', boxSizing: 'border-box', maxWidth: 900 }}>
-
-        {/* Page title */}
         <div style={{ marginBottom: 48 }}>
           <h1 style={{ margin: '0 0 6px', fontSize: 28, fontWeight: 800, color: '#111827' }}>Component Showcase</h1>
           <p style={{ margin: 0, fontSize: 14, color: '#6b7280' }}>
