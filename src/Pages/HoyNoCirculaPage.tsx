@@ -1,13 +1,13 @@
 import { useState, useMemo } from "react";
 import { CheckCircle2 } from "lucide-react";
-import { getDayRestriction, getRestrictedDatesForMonth } from "./circula-data";
-import { CalendarCard } from "./CalendarCard";
-import { EstadoDiaCard } from "./EstadoDiaCard";
-import { PlacasRestringidasCard } from "./PlacasRestringidasCard";
-import { HologramasCard } from "./HologramasCard";
-import { InfoNota } from "./InfoNota";
+import { getDayRestriction, getRestrictedDatesForMonth } from "@/components/modules/hoy-no-circula/circula-data";
+import { CalendarCard } from "@/components/modules/hoy-no-circula/CalendarCard";
+import { EstadoDiaCard } from "@/components/modules/hoy-no-circula/EstadoDiaCard";
+import { PlacasRestringidasCard } from "@/components/modules/hoy-no-circula/PlacasRestringidasCard";
+import { HologramasCard } from "@/components/modules/hoy-no-circula/HologramasCard";
+import { InfoNota } from "@/components/modules/hoy-no-circula/InfoNota";
 
-export function HoyNoCirculaContainer() {
+export function HoyNoCirculaPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date(2025, 2, 6));
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date(2025, 2, 1));
 
@@ -26,7 +26,6 @@ export function HoyNoCirculaContainer() {
 
   return (
     <div className="flex gap-6 p-6 h-full bg-blue-50 overflow-hidden">
-      {/* Calendario — ocupa todo el espacio libre */}
       <div className="flex-1 min-w-0 min-h-0">
         <CalendarCard
           selectedDate={selectedDate}
@@ -38,7 +37,6 @@ export function HoyNoCirculaContainer() {
         />
       </div>
 
-      {/* Panel de detalles */}
       <div className="w-80 shrink-0 flex flex-col gap-4 overflow-y-auto">
         <EstadoDiaCard date={selectedDate} restriction={restriction} />
 

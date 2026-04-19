@@ -5,16 +5,16 @@ import {
   filterZonas,
   getEstadisticas,
   type FilterType,
-} from "./alcaldias-filter-data";
-import { FilterBar } from "./FilterBar";
-import { AlcaldiasList } from "./AlcaldiasList";
-import { EstadisticasRapidas } from "./EstadisticasRapidas";
+} from "@/components/modules/filtrar-alcaldias/alcaldias-filter-data";
+import { FilterBar } from "@/components/modules/filtrar-alcaldias/FilterBar";
+import { AlcaldiasList } from "@/components/modules/filtrar-alcaldias/AlcaldiasList";
+import { EstadisticasRapidas } from "@/components/modules/filtrar-alcaldias/EstadisticasRapidas";
 
-interface FiltrarAlcaldiasContainerProps {
+interface FiltrarAlcaldiasPageProps {
   onNavigate?: (screen: string) => void;
 }
 
-export function FiltrarAlcaldiasContainer({ onNavigate }: FiltrarAlcaldiasContainerProps) {
+export function FiltrarAlcaldiasPage({ onNavigate }: FiltrarAlcaldiasPageProps) {
   const [activeFilters, setActiveFilters] = useState<FilterType[]>([]);
 
   const zonasFiltradas = useMemo(
