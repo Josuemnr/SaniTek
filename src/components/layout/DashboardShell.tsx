@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Settings, LogOut, Search, Bell, Users, CreditCard, UserCog } from "lucide-react";
+import { Settings, LogOut, Search, Bell, Users, CreditCard, UserCog, ShieldCheck } from "lucide-react";
 import logo from '@/assets/logo.png';
 import { NAV_LINKS, SCREEN_CONFIGS } from '@/lib/nav-constants';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -11,6 +11,7 @@ const ADMIN_LINKS = [
   { title: "Estatus de usuarios",     href: "/Gestion_Usuarios", icon: Users },
   { title: "Administrar Suscripción", href: "/Suscrpcion",       icon: CreditCard },
   { title: "Configuración de Perfil", href: "/Perfil_Usuario",   icon: UserCog },
+  { title: "Panel SaniTek",           href: "/superadmin",       icon: ShieldCheck },
 ];
 
 interface SidebarItemProps {
@@ -31,7 +32,7 @@ const SidebarItem = ({ icon: Icon, label, active }: SidebarItemProps) => (
   </div>
 );
 
-const ADMIN_PATHS = ["/Gestion_Usuarios", "/Suscrpcion", "/Perfil_Usuario"];
+const ADMIN_PATHS = ["/Gestion_Usuarios", "/Suscrpcion", "/Perfil_Usuario", "/superadmin"];
 
 export function DashboardShell() {
   const { pathname } = useLocation();

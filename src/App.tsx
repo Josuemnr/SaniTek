@@ -7,6 +7,7 @@ import PerfilUsuario from './Pages/Perfil_Usuario';
 import ForgotPassword from './Pages/forgot';
 import StorybookPage from './Pages/Storybook';
 import { DashboardShell }       from "@/components/layout/DashboardShell";
+import { SuperAdminPage }       from "@/Pages/SuperAdminPage";
 import { RiskMapPage }          from "@/Pages/RiskMapPage";
 import { HoyNoCirculaPage }     from "@/Pages/HoyNoCirculaPage";
 import { FiltrarAlcaldiasPage } from "@/Pages/FiltrarAlcaldiasPage";
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="/Gestion_Usuarios" element={<GestionUsuarios />} />
           <Route path="/Suscrpcion"       element={<Suscrpcion />} />
           <Route path="/Perfil_Usuario"   element={<PerfilUsuario />} />
+          <Route path="/superadmin"       element={<SuperAdminPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

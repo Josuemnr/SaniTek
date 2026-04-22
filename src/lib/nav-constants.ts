@@ -29,6 +29,10 @@ export const SCREEN_CONFIGS: Record<string, { pageTitle: string; subtitle: strin
     pageTitle: "Administración de Suscripción",
     subtitle: "Gestiona tu plan y métodos de pago",
   },
+  "/superadmin": {
+    pageTitle: "Panel SaniTek",
+    subtitle: "Gestión de empresas clientes",
+  },
 };
 
 export const NAV_LINKS: NavLink[] = [
