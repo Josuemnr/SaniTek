@@ -6,7 +6,6 @@ import type { User } from '../Components/modules/gestion_usuarios/UserRow';
 import { PaginationBar } from '../Components/modules/gestion_usuarios/PaginationBar';
 import { EditUserPanel } from '../Components/modules/gestion_usuarios/EditUserPanel';
 import { NewUserModal } from '../Components/modules/gestion_usuarios/NewUserModal';
-import { Sidebar } from '../Components/Sidebar';
 
 type FilterType = 'Activos' | 'Inactivos' | 'Administradores';
 
@@ -57,8 +56,6 @@ export default function GestionUsuarios() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-      <Sidebar />
     <div style={{ flex: 1, background: '#f8fafc', padding: '28px 32px', boxSizing: 'border-box', textAlign: 'left' }}>
 
       {/* Header */}
@@ -139,7 +136,6 @@ export default function GestionUsuarios() {
       {showModal && (
         <NewUserModal onClose={() => setShowModal(false)} onSave={handleAddUser} />
       )}
-    </div>
     </div>
   );
 }

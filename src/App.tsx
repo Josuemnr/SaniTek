@@ -18,9 +18,6 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login"            element={<Login />} />
-        <Route path="/Gestion_Usuarios" element={<GestionUsuarios />} />
-        <Route path="/Suscrpcion"       element={<Suscrpcion />} />
-        <Route path="/Perfil_Usuario"   element={<PerfilUsuario />} />
         <Route path="/forgot"           element={<ForgotPassword />} />
         <Route path="/storybook"        element={<StorybookPage />} />
         <Route element={<DashboardShell />}>
@@ -29,6 +26,9 @@ export default function App() {
           <Route path="/hoy-no-circula" element={<HoyNoCirculaPage />} />
           <Route path="/filtrar"        element={<FiltrarAlcaldiasPage />} />
           <Route path="/detalle"        element={<DetalleAlcaldiaPage />} />
+          <Route path="/Gestion_Usuarios" element={<GestionUsuarios />} />
+          <Route path="/Suscrpcion"       element={<Suscrpcion />} />
+          <Route path="/Perfil_Usuario"   element={<PerfilUsuario />} />
         </Route>
       </Routes>
     </BrowserRouter>
