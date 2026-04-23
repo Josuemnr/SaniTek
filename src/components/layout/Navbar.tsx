@@ -7,8 +7,18 @@ import { Search, Bell } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import { cn } from '@/lib/utils';
 import { NAV_LINKS } from '@/lib/nav-constants';
+import { useAuth } from '@/context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export function Navbar() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between px-4">
@@ -58,21 +68,27 @@ export function Navbar() {
                 data-testid="user-avatar"
               >
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="" alt="User" />
-                  <AvatarFallback className="bg-primary text-primary-foreground">ST</AvatarFallback>
+                  <AvatarImage src={user?.photoURL || ""} alt="User" />
+                  <AvatarFallback className="bg-primary text-primary-foreground">
+                    {user?.email?.substring(0, 2).toUpperCase() || 'ST'}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="hidden lg:flex flex-col text-left">
-                  <span className="text-sm font-medium leading-none">Admin SaniTek</span>
-                  <span className="text-xs text-muted-foreground">admin@sanitek.com</span>
+                  <span className="text-sm font-medium leading-none">
+                    {user?.displayName || 'Usuario SaniTek'}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {user?.email || 'sin-correo@sanitek.com'}
+                  </span>
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Perfil</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/Perfil_Usuario')}>Perfil</DropdownMenuItem>
                 <DropdownMenuItem>Ajustes</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Cerrar sesión</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>Cerrar sesión</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
