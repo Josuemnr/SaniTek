@@ -1,33 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Globe3D } from '../Components/modules/login/Globe3D';
 import { motion } from 'framer-motion';
 import { CustomImput } from '../Components/modules/login/CustomImput';
 import { PrimaryButton } from '../Components/modules/login/PrimaryButton';
 import { PantallaCarga } from '../Components/modules/login/Pantalla_Carga';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../lib/firebase';
+import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {
+  // Redirigir si ya está autenticado
+  useEffect(() => {
+    if (user) {
+      navigate('/Gestion_Usuarios', { replace: true });
+    }
+  }, [user, navigate]);
+
+  const handleLogin = async () => {
     setErrorMessage('');
     if (!email || !password) {
       setErrorMessage('Por favor, llena todos los campos.');
       return;
     }
+
     setIsLoading(true);
-    setTimeout(() => { //para simular datos fake de login
-      if (email === 'josue@sanitek.com' && password === '12345') {
-        navigate('/Gestion_Usuarios', { replace: true });
-      } else {
-        setIsLoading(false);
-        setErrorMessage('Correo o contraseña incorrectos.');
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      // El useEffect se encargará de la redirección al detectar el cambio en 'user'
+    } catch (error: any) {
+      setIsLoading(false);
+      console.error("Login error:", error.code);
+      switch (error.code) {
+        case 'auth/invalid-email':
+          setErrorMessage('Correo electrónico no válido.');
+          break;
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
+        case 'auth/invalid-credential':
+          setErrorMessage('Credenciales incorrectas.');
+          break;
+        case 'auth/too-many-requests':
+          setErrorMessage('Demasiados intentos. Intenta más tarde.');
+          break;
+        default:
+          setErrorMessage('Error al iniciar sesión. Intenta de nuevo.');
       }
-    }, 1500);
+    }
   };
 
   return (
