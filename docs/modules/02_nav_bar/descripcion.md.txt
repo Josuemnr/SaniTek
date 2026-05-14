@@ -1,0 +1,14 @@
+# Módulo: nav bar
+
+## Referencia Visual
+Ver imagen adjunta `nav.png` en esta carpeta para diseño, colores y proporciones. Se requiere un calco 'pixel-perfect'.
+
+## Requerimientos Técnicos y Stack
+Usar React (Vite), TypeScript y Tailwind CSS. Integrar con:
+- **Shadcn UI:** Usar para las Cards y controles de UI.
+
+## Componentes del Módulo
+
+Logo de Sanitek (logo completo con especificaciones se encuentra en logo.png)
+Opciones (Mapa, Historial, Hoy NO circula, administración).
+Barra de Búsqueda
