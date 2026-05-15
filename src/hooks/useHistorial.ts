@@ -5,7 +5,7 @@ import {
   getMetricas,
   type DataPoint,
   type Metricas,
-} from '@/components/modules/historial-riesgos/historial-data';
+} from '@/Components/modules/historial-riesgos/historial-data';
 
 const MES_INDEX: Record<string, number> = {
   Ene: 0, Feb: 1, Mar: 2, Abr: 3, May: 4, Jun: 5,

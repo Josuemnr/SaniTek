@@ -2,10 +2,10 @@ import { ArrowLeft, Wind, Gauge, Leaf } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useRiskStore } from "@/store/useRiskStore";
 import { useDetalleAlcaldia } from "@/hooks/useDetalleAlcaldia";
-import { getDetalleAlcaldia, type RiskTag } from "@/components/modules/detalle-alcaldia/detalle-alcaldia-data";
-import { IRSACard } from "@/components/modules/detalle-alcaldia/IRSACard";
-import { VariablesGrid } from "@/components/modules/detalle-alcaldia/VariablesGrid";
-import { VariableCard } from "@/components/modules/detalle-alcaldia/VariableCard";
+import { getDetalleAlcaldia, type RiskTag } from "@/Components/modules/detalle-alcaldia/detalle-alcaldia-data";
+import { IRSACard } from "@/Components/modules/detalle-alcaldia/IRSACard";
+import { VariablesGrid } from "@/Components/modules/detalle-alcaldia/VariablesGrid";
+import { VariableCard } from "@/Components/modules/detalle-alcaldia/VariableCard";
 import { cn } from "@/lib/utils";
 import type { IrsaDiagnosticoApiResponse } from "@/hooks/useDetalleAlcaldia";
 

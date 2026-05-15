@@ -1,11 +1,11 @@
 import { useState, useMemo } from "react";
 import { CheckCircle2 } from "lucide-react";
-import { getDayRestriction, getRestrictedDatesForMonth } from "@/components/modules/hoy-no-circula/circula-data";
-import { CalendarCard } from "@/components/modules/hoy-no-circula/CalendarCard";
-import { EstadoDiaCard } from "@/components/modules/hoy-no-circula/EstadoDiaCard";
-import { PlacasRestringidasCard } from "@/components/modules/hoy-no-circula/PlacasRestringidasCard";
-import { HologramasCard } from "@/components/modules/hoy-no-circula/HologramasCard";
-import { InfoNota } from "@/components/modules/hoy-no-circula/InfoNota";
+import { getDayRestriction, getRestrictedDatesForMonth } from "@/Components/modules/hoy-no-circula/circula-data";
+import { CalendarCard } from "@/Components/modules/hoy-no-circula/CalendarCard";
+import { EstadoDiaCard } from "@/Components/modules/hoy-no-circula/EstadoDiaCard";
+import { PlacasRestringidasCard } from "@/Components/modules/hoy-no-circula/PlacasRestringidasCard";
+import { HologramasCard } from "@/Components/modules/hoy-no-circula/HologramasCard";
+import { InfoNota } from "@/Components/modules/hoy-no-circula/InfoNota";
 
 export function HoyNoCirculaPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date(2025, 2, 6));

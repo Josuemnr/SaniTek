@@ -7,7 +7,7 @@ import Suscrpcion from './Pages/Suscrpcion';
 import PerfilUsuario from './Pages/Perfil_Usuario';
 import ForgotPassword from './Pages/forgot';
 import StorybookPage from './Pages/Storybook';
-import { DashboardShell }       from "@/components/layout/DashboardShell";
+import { DashboardShell }       from "@/Components/layout/DashboardShell";
 import { RiskMapPage }          from "@/Pages/RiskMapPage";
 import { HoyNoCirculaPage }     from "@/Pages/HoyNoCirculaPage";
 import { FiltrarAlcaldiasPage } from "@/Pages/FiltrarAlcaldiasPage";

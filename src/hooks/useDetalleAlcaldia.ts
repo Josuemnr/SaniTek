@@ -4,7 +4,7 @@ import {
   getDetalleAlcaldia,
   type DetalleAlcaldia,
   type RiskTag,
-} from '@/components/modules/detalle-alcaldia/detalle-alcaldia-data';
+} from '@/Components/modules/detalle-alcaldia/detalle-alcaldia-data';
 
 export type { IrsaDiagnosticoApiResponse };
 

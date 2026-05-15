@@ -6,7 +6,7 @@ import {
   ZONAS_MOCK,
   type Zona,
   type RiskLevel,
-} from '@/components/modules/filtrar-alcaldias/alcaldias-filter-data';
+} from '@/Components/modules/filtrar-alcaldias/alcaldias-filter-data';
 
 const NOMBRE_NORMALIZADO: Record<string, string> = {
   'Cuajimalpa': 'Cuajimalpa de Morelos',

@@ -1,5 +1,5 @@
 import { Wind, Droplets, SlidersHorizontal, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/Components/ui/button";
 import { cn } from "@/lib/utils";
 import { type FilterType, FILTER_CONFIG } from "./alcaldias-filter-data";
 

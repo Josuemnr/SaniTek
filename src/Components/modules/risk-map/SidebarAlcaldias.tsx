@@ -1,13 +1,13 @@
 import { useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
+import { ScrollArea } from "@/Components/ui/scroll-area"
+import { Badge } from "@/Components/ui/badge"
 import { MapPin, X } from "lucide-react"
 import { useRiskStore } from "@/store/useRiskStore"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/Components/ui/button"
 import { useAlcaldias } from "@/hooks/useAlcaldias"
-import { RISK_LEVEL_CONFIG } from "@/components/modules/filtrar-alcaldias/alcaldias-filter-data"
+import { RISK_LEVEL_CONFIG } from "@/Components/modules/filtrar-alcaldias/alcaldias-filter-data"
 
 const ALCALDIAS = [
   "Álvaro Obregón",

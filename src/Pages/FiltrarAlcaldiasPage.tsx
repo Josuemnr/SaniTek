@@ -5,11 +5,11 @@ import {
   filterZonas,
   getEstadisticas,
   type FilterType,
-} from "@/components/modules/filtrar-alcaldias/alcaldias-filter-data";
+} from "@/Components/modules/filtrar-alcaldias/alcaldias-filter-data";
 import { useAlcaldias } from "@/hooks/useAlcaldias";
-import { FilterBar } from "@/components/modules/filtrar-alcaldias/FilterBar";
-import { AlcaldiasList } from "@/components/modules/filtrar-alcaldias/AlcaldiasList";
-import { EstadisticasRapidas } from "@/components/modules/filtrar-alcaldias/EstadisticasRapidas";
+import { FilterBar } from "@/Components/modules/filtrar-alcaldias/FilterBar";
+import { AlcaldiasList } from "@/Components/modules/filtrar-alcaldias/AlcaldiasList";
+import { EstadisticasRapidas } from "@/Components/modules/filtrar-alcaldias/EstadisticasRapidas";
 
 export function FiltrarAlcaldiasPage() {
   const navigate = useNavigate();
