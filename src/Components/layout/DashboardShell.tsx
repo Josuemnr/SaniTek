@@ -1,12 +1,19 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Settings, LogOut, Search, Bell } from "lucide-react";
+import { Settings, LogOut, Search, Bell, Users, CreditCard, UserCog, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/Context/AuthContext";
 import logo from '@/assets/logo.png';
 import { NAV_LINKS, SCREEN_CONFIGS } from '@/lib/nav-constants';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Input } from '@/Components/ui/input';
 import { Button } from '@/Components/ui/button';
+
+const ADMIN_LINKS = [
+  { title: "Estatus de usuarios",     href: "/Gestion_Usuarios", icon: Users },
+  { title: "Administrar Suscripción", href: "/Suscrpcion",       icon: CreditCard },
+  { title: "Configuración de Perfil", href: "/Perfil_Usuario",   icon: UserCog },
+  { title: "Panel SaniTek",           href: "/superadmin",       icon: ShieldCheck },
+];
 
 interface SidebarItemProps {
   icon: React.ElementType;
@@ -26,10 +33,13 @@ const SidebarItem = ({ icon: Icon, label, active }: SidebarItemProps) => (
   </div>
 );
 
+const ADMIN_PATHS = ["/Gestion_Usuarios", "/Suscrpcion", "/Perfil_Usuario", "/superadmin"];
+
 export function DashboardShell() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const isAdminSection = ADMIN_PATHS.includes(pathname);
 
   const handleLogout = async () => {
     await logout();
@@ -61,6 +71,21 @@ export function DashboardShell() {
             </Link>
           ))}
         </nav>
+
+        {isAdminSection && (
+          <div className="flex flex-col gap-1 border-t pt-4">
+            <p className="px-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">Administración</p>
+            {ADMIN_LINKS.map((item) => (
+              <Link key={item.title} to={item.href} className="no-underline">
+                <SidebarItem
+                  icon={item.icon}
+                  label={item.title}
+                  active={pathname === item.href}
+                />
+              </Link>
+            ))}
+          </div>
+        )}
 
         <div className="mt-auto flex flex-col gap-4 border-t pt-4">
           <Link to="/Perfil_Usuario" className="no-underline">
@@ -107,7 +132,7 @@ export function DashboardShell() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-hidden">
+        <main className="flex-1 overflow-y-auto">
           <Outlet />
         </main>
       </div>

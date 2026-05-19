@@ -27,9 +27,6 @@ export default function App() {
       <Routes>
         <Route path="/login"            element={<Login />} />
         <Route path="/forgot"           element={<ForgotPassword />} />
-        <Route path="/Gestion_Usuarios" element={<PrivateRoute><GestionUsuarios /></PrivateRoute>} />
-        <Route path="/Suscrpcion"       element={<PrivateRoute><Suscrpcion /></PrivateRoute>} />
-        <Route path="/Perfil_Usuario"   element={<PrivateRoute><PerfilUsuario /></PrivateRoute>} />
         <Route path="/storybook"        element={<PrivateRoute><StorybookPage /></PrivateRoute>} />
         <Route element={<PrivateRoute><DashboardShell /></PrivateRoute>}>
           <Route path="/"               element={<RiskMapPage />} />
@@ -37,7 +34,10 @@ export default function App() {
           <Route path="/hoy-no-circula" element={<HoyNoCirculaPage />} />
           <Route path="/filtrar"        element={<FiltrarAlcaldiasPage />} />
           <Route path="/detalle"        element={<DetalleAlcaldiaPage />} />
-          <Route path="/superadmin"     element={<SuperAdminPage />} />
+          <Route path="/Gestion_Usuarios" element={<GestionUsuarios />} />
+          <Route path="/Suscrpcion"       element={<Suscrpcion />} />
+          <Route path="/Perfil_Usuario"   element={<PerfilUsuario />} />
+          <Route path="/superadmin"       element={<SuperAdminPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

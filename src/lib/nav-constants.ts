@@ -1,4 +1,4 @@
-import { type LucideIcon, Map, History, Car, ShieldCheck } from "lucide-react";
+import { type LucideIcon, Map, History, Car } from "lucide-react";
 
 export interface NavLink {
   title: string;
@@ -17,7 +17,19 @@ export const SCREEN_CONFIGS: Record<string, { pageTitle: string; subtitle: strin
     pageTitle: "Detalle por Alcaldía",
     subtitle: "Variables críticas y riesgo sanitario",
   },
-   "/superadmin": {
+  "/Perfil_Usuario": {
+    pageTitle: "Configuración de Perfil",
+    subtitle: "Gestiona tu información personal y seguridad",
+  },
+  "/Gestion_Usuarios": {
+    pageTitle: "Gestión de Usuarios",
+    subtitle: "Administra los usuarios del sistema",
+  },
+  "/Suscrpcion": {
+    pageTitle: "Administración de Suscripción",
+    subtitle: "Gestiona tu plan y métodos de pago",
+  },
+  "/superadmin": {
     pageTitle: "Panel SaniTek",
     subtitle: "Gestión de empresas clientes",
   },
@@ -44,12 +56,5 @@ export const NAV_LINKS: NavLink[] = [
     icon: Car,
     pageTitle: "Predicciones Hoy No Circula",
     subtitle: "Consulta las restricciones vehiculares del mes",
-  },
-  {
-    title: "Administración",
-    href: "/admin",
-    icon: ShieldCheck,
-    pageTitle: "Administración",
-    subtitle: "Gestión del sistema",
   },
 ];

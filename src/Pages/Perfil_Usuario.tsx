@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { User, Shield, Info, Check, Bell } from 'lucide-react';
-import { Sidebar } from '../Components/Sidebar';
+import { User, Shield, Info, Check } from 'lucide-react';
 import { ProfileCard } from '../Components/modules/perfil_usuario/ProfileCard';
 import { PasswordInput } from '../Components/modules/perfil_usuario/PasswordInput';
-import { UserAvatar } from '../Components/UserAvatar';
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '11px 14px', borderRadius: 10,
@@ -53,21 +51,7 @@ export default function PerfilUsuario() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-      <Sidebar />
     <div style={{ flex: 1, background: '#f8fafc', boxSizing: 'border-box' }}>
-
-      {/* Page header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 32px', borderBottom: '1px solid #e5e7eb', background: 'white' }}>
-        <h1 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#111827' }}>Configuración de Perfil</h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <button style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#6b7280', display: 'flex', position: 'relative' }}>
-            <Bell size={20} />
-            <span style={{ position: 'absolute', top: -2, right: -2, width: 8, height: 8, borderRadius: '50%', background: '#ef4444', border: '1.5px solid white' }} />
-          </button>
-          <UserAvatar name="Josué Monroy" bgColor="#7b9ab3" size="sm" />
-        </div>
-      </div>
 
       {/* Content */}
       <div style={{ maxWidth: 720, margin: '0 auto', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -179,7 +163,6 @@ export default function PerfilUsuario() {
         </div>
 
       </div>
-    </div>
     </div>
   );
 }
