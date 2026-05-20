@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { SlidersHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { SidebarAlcaldias } from "@/components/modules/risk-map/SidebarAlcaldias";
-import { QuickStatsCard } from "@/components/modules/risk-map/QuickStatsCard";
-import { TemporalControl } from "@/components/modules/risk-map/TemporalControl";
-import { AlcaldiaInfoPanel } from "@/components/modules/risk-map/AlcaldiaInfoPanel";
-import { CdmxLeafletMap } from "@/components/modules/risk-map/CdmxLeafletMap";
-import { BackgroundBeams } from "@/components/ui/background-beams";
+import { Button } from "@/Components/ui/button";
+import { SidebarAlcaldias } from "@/Components/modules/risk-map/SidebarAlcaldias";
+import { QuickStatsCard } from "@/Components/modules/risk-map/QuickStatsCard";
+import { TemporalControl } from "@/Components/modules/risk-map/TemporalControl";
+import { AlcaldiaInfoPanel } from "@/Components/modules/risk-map/AlcaldiaInfoPanel";
+import { CdmxLeafletMap } from "@/Components/modules/risk-map/CdmxLeafletMap";
+import { BackgroundBeams } from "@/Components/ui/background-beams";
 
 export function RiskMapPage() {
   const navigate = useNavigate();

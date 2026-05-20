@@ -2,9 +2,9 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRiskStore } from "@/store/useRiskStore";
 import { useHistorial } from "@/hooks/useHistorial";
-import { SanidadChart } from "@/components/modules/historial-riesgos/SanidadChart";
-import { MetricsRow } from "@/components/modules/historial-riesgos/MetricsRow";
-import { Button } from "@/components/ui/button";
+import { SanidadChart } from "@/Components/modules/historial-riesgos/SanidadChart";
+import { MetricsRow } from "@/Components/modules/historial-riesgos/MetricsRow";
+import { Button } from "@/Components/ui/button";
 
 export function HistorialRiesgosPage() {
   const { selectedAlcaldia } = useRiskStore();

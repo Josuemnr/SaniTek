@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "@/Components/ui/card"
 import { ShieldAlert, ShieldCheck, AlertTriangle, Activity, Heart } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAlcaldias } from "@/hooks/useAlcaldias"
