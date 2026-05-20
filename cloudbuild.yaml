@@ -1,0 +1,94 @@
+# Cloud Build pipeline para sanitek_frontend (React + Vite servido por nginx)
+#
+# Pasos:
+#   1. Docker build multi-stage (node compila -> nginx sirve)
+#      Las variables VITE_* se pasan como --build-arg porque Vite las embebe
+#      en el bundle de JS durante el build (no son runtime como en Quarkus).
+#   2. Push a Artifact Registry con tags :<version> y :latest
+#   3. Deploy a Cloud Run
+#
+# Version (primera que exista):
+#   - $TAG_NAME   (build disparado por git tag)
+#   - $SHORT_SHA  (push a branch)
+#   - "dev"       (build local sin git context)
+#
+# Requisitos previos en GCP:
+#   - Artifact Registry repository creado en ${_REGION}
+#   - Service account de Cloud Build con roles:
+#       roles/run.admin
+#       roles/iam.serviceAccountUser
+#       roles/artifactregistry.writer
+#
+# Las VITE_FIREBASE_* NO son secretos (Firebase Web SDK las expone al cliente
+# por diseno). Por eso van como substitutions normales, no como Secret Manager.
+#
+# Destino: ${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_IMAGE}
+
+substitutions:
+  _REGION: us-central1
+  _REPOSITORY: sanitek-front          # Nombre del repositorio en Artifact Registry
+  _IMAGE: sanitek-frontend
+  _SERVICE: sanitek-frontend          # Nombre del servicio en Cloud Run
+  _PROJECT_ID: sanitec-496405
+
+  # URL del backend ya deployado en Cloud Run.
+  # Configurar en el Trigger con la URL real.
+  _VITE_API_BASE_URL: ""
+
+  # Credenciales del Firebase Web SDK (publicas, OK embeberlas en el cliente).
+  # Configurar en el Trigger con los valores reales del proyecto Firebase.
+  _VITE_FIREBASE_API_KEY: ""
+  _VITE_FIREBASE_AUTH_DOMAIN: ""
+  _VITE_FIREBASE_PROJECT_ID: ""
+  _VITE_FIREBASE_STORAGE_BUCKET: ""
+  _VITE_FIREBASE_MESSAGING_SENDER_ID: ""
+  _VITE_FIREBASE_APP_ID: ""
+  _VITE_FIREBASE_MEASUREMENT_ID: ""
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+steps:
+  - id: build-and-push
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -e
+        VERSION="$${TAG_NAME:-$${SHORT_SHA:-dev}}"
+        IMAGE_BASE="${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_IMAGE}"
+        echo "Building $$IMAGE_BASE:$$VERSION"
+        docker build \
+          --build-arg VITE_API_BASE_URL="${_VITE_API_BASE_URL}" \
+          --build-arg VITE_FIREBASE_API_KEY="${_VITE_FIREBASE_API_KEY}" \
+          --build-arg VITE_FIREBASE_AUTH_DOMAIN="${_VITE_FIREBASE_AUTH_DOMAIN}" \
+          --build-arg VITE_FIREBASE_PROJECT_ID="${_VITE_FIREBASE_PROJECT_ID}" \
+          --build-arg VITE_FIREBASE_STORAGE_BUCKET="${_VITE_FIREBASE_STORAGE_BUCKET}" \
+          --build-arg VITE_FIREBASE_MESSAGING_SENDER_ID="${_VITE_FIREBASE_MESSAGING_SENDER_ID}" \
+          --build-arg VITE_FIREBASE_APP_ID="${_VITE_FIREBASE_APP_ID}" \
+          --build-arg VITE_FIREBASE_MEASUREMENT_ID="${_VITE_FIREBASE_MEASUREMENT_ID}" \
+          --tag "$$IMAGE_BASE:$$VERSION" \
+          --tag "$$IMAGE_BASE:latest" \
+          --file=Dockerfile \
+          .
+        docker push "$$IMAGE_BASE:$$VERSION"
+        docker push "$$IMAGE_BASE:latest"
+
+  - id: deploy
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -e
+        VERSION="$${TAG_NAME:-$${SHORT_SHA:-dev}}"
+        IMAGE="${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_IMAGE}:$$VERSION"
+        gcloud run deploy ${_SERVICE} \
+          --image "$$IMAGE" \
+          --region ${_REGION} \
+          --platform managed \
+          --port 8080 \
+          --allow-unauthenticated
+
+timeout: 1800s
