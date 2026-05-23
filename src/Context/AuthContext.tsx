@@ -4,6 +4,7 @@ import { auth } from '../Services/firebase';
 
 interface AuthContextType {
   user: User | null;
+  role: 'USER' | 'ADMIN' | 'SUPER_ADMIN' | null;
   loading: boolean;
   logout: () => Promise<void>;
 }
@@ -12,12 +13,23 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [role, setRole] = useState<'USER' | 'ADMIN' | 'SUPER_ADMIN' | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Escucha cambios en el estado de autenticación (Login/Logout/Persistencia)
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      
+      // Mock de rol basado en email para pruebas locales
+      if (currentUser) {
+        if (currentUser.email?.includes('super')) setRole('SUPER_ADMIN');
+        else if (currentUser.email?.includes('admin')) setRole('ADMIN');
+        else setRole('USER');
+      } else {
+        setRole(null);
+      }
+      
       setLoading(false);
     });
 
@@ -43,7 +55,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, logout }}>
+    <AuthContext.Provider value={{ user, role, loading, logout }}>
       {children}
     </AuthContext.Provider>
   );

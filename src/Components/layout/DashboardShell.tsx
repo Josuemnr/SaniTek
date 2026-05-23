@@ -1,12 +1,20 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Settings, LogOut, Search, Bell, CreditCard,UserCog,ShieldCheck, Users } from "lucide-react";
+import { Settings, LogOut, Search, Bell, CreditCard,UserCog,ShieldCheck, Users, ChevronUp } from "lucide-react";
 import { useAuth } from "@/Context/AuthContext";
 import logo from '@/assets/logo.png';
 import { NAV_LINKS, SCREEN_CONFIGS } from '@/lib/nav-constants';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
+import { Input } from '@/Components/ui/input';
+import { Button } from '@/Components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/Components/ui/dropdown-menu";
 
 const ADMIN_LINKS = [
   { title: "Estatus de usuarios",     href: "/Gestion_Usuarios", icon: Users },
@@ -36,7 +44,7 @@ const SidebarItem = ({ icon: Icon, label, active }: SidebarItemProps) => (
 export function DashboardShell() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, role } = useAuth();
 
   const handleLogout = async () => {
     await logout();
@@ -47,6 +55,17 @@ export function DashboardShell() {
   const screenConfig = SCREEN_CONFIGS[pathname];
   const pageTitle = activeLink?.pageTitle ?? screenConfig?.pageTitle ?? "";
   const subtitle  = activeLink?.subtitle  ?? screenConfig?.subtitle;
+
+  // Filtrar links según el rol
+  const filteredAdminLinks = ADMIN_LINKS.filter(link => {
+    if (role === 'SUPER_ADMIN') return true; // SuperAdmin ve todo
+    if (role === 'ADMIN') {
+      // Admin ve estatus de usuarios y perfil
+      return link.href === "/Gestion_Usuarios" || link.href === "/Perfil_Usuario";
+    }
+    // Usuario normal solo ve su perfil
+    return link.href === "/Perfil_Usuario";
+  });
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background">
@@ -67,41 +86,42 @@ export function DashboardShell() {
               />
             </Link>
           ))}
-
-          <div className="mt-4 flex flex-col gap-1">
-            <p className="px-3 text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
-              Administración
-            </p>
-            {ADMIN_LINKS.map((item) => (
-              <Link key={item.title} to={item.href} className="no-underline">
-                <SidebarItem
-                  icon={item.icon}
-                  label={item.title}
-                  active={pathname === item.href}
-                />
-              </Link>
-            ))}
-          </div>
         </nav>
 
-        <div className="mt-auto flex flex-col gap-4 border-t pt-4">
-          <Link to="/Perfil_Usuario" className="no-underline">
-            <div className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-sidebar-accent/30 cursor-pointer transition-colors">
-              <Avatar className="h-9 w-9 border">
-                <AvatarImage src="" />
-                <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">CM</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col overflow-hidden">
-                <span className="text-xs font-bold truncate text-gray-700">Carlos Méndez</span>
-                <span className="text-[10px] text-muted-foreground truncate">Gerente logística</span>
+        <div className="mt-auto flex flex-col gap-2 border-t pt-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-sidebar-accent/30 cursor-pointer transition-colors group">
+                <Avatar className="h-9 w-9 border">
+                  <AvatarImage src="" />
+                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">CM</AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col overflow-hidden flex-1">
+                  <span className="text-xs font-bold truncate text-gray-700">Carlos Méndez</span>
+                  <span className="text-[10px] text-muted-foreground truncate">Gerente logística</span>
+                </div>
+                <ChevronUp className="size-4 text-muted-foreground group-data-[state=open]:rotate-180 transition-transform" />
               </div>
-            </div>
-          </Link>
-          <div className="flex flex-col gap-1">
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" side="top" className="w-56 mb-2 ml-4">
+              <DropdownMenuLabel>Configuración</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {filteredAdminLinks.map((item) => (
+                <DropdownMenuItem key={item.title} onClick={() => navigate(item.href)}>
+                  <item.icon className="mr-2 size-4" />
+                  <span>{item.title}</span>
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
+                <LogOut className="mr-2 size-4" />
+                <span>Cerrar sesión</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <div className="flex flex-col gap-1 mt-2">
             <SidebarItem icon={Settings} label="Configuración" />
-            <button onClick={handleLogout} className="w-full bg-transparent border-none p-0 cursor-pointer text-left">
-              <SidebarItem icon={LogOut} label="Cerrar sesión" />
-            </button>
           </div>
         </div>
       </aside>

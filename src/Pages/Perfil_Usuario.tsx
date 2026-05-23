@@ -1,22 +1,21 @@
 import { useState } from 'react';
 import { User, Shield, Check, Bell } from 'lucide-react';
-import { Sidebar } from '../Components/Sidebar';
 import { ProfileCard } from '../Components/modules/perfil_usuario/ProfileCard';
 import { PasswordInput } from '../Components/modules/perfil_usuario/PasswordInput';
 import { UserAvatar } from '../Components/UserAvatar';
 import { validatePasswordStrict } from '@/hooks/usePasswordStrength';
-
-const inputStyle: React.CSSProperties = {
-  width: '100%', padding: '11px 14px', borderRadius: 10,
-  border: 'none', background: '#eff6ff',
-  fontSize: 14, color: '#374151', outline: 'none', boxSizing: 'border-box',
-};
 
 const sectionCard: React.CSSProperties = {
   background: 'white', borderRadius: 16,
   border: '1px solid #e5e7eb',
   padding: '24px 28px',
   display: 'flex', flexDirection: 'column', gap: 20,
+};
+
+const inputStyle: React.CSSProperties = {
+  width: '100%', padding: '11px 14px', borderRadius: 10,
+  border: 'none', background: '#eff6ff',
+  fontSize: 14, color: '#374151', outline: 'none', boxSizing: 'border-box',
 };
 
 export default function PerfilUsuario() {
@@ -54,11 +53,10 @@ export default function PerfilUsuario() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-      <Sidebar />
     <div style={{ flex: 1, background: '#f8fafc', boxSizing: 'border-box' }}>
 
-      {/* Page header */}
+      {/* Page header (Opcional, ya que DashboardShell tiene header, 
+          pero este puede servir como sub-header de perfil) */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 32px', borderBottom: '1px solid #e5e7eb', background: 'white' }}>
         <h1 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#111827' }}>Configuración de Perfil</h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -173,7 +171,6 @@ export default function PerfilUsuario() {
         </div>
 
       </div>
-    </div>
     </div>
   );
 }

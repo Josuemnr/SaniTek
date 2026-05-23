@@ -19,12 +19,12 @@ export function QuickStatsCard() {
   const [casosRespiratorios, setCasosRespiratorios] = useState<number | null>(null)
 
   useEffect(() => {
-    api.salud
-      .porAnio(new Date().getFullYear())
+    api.health
+      .listAll()
       .then((rows) => {
         if (rows.length === 0) return
         const total = rows.reduce(
-          (sum, r) => sum + r.casosNeumonia + r.casosEpoc + r.casosAsma,
+          (sum, r) => sum + r.totalCases,
           0
         )
         setCasosRespiratorios(total)

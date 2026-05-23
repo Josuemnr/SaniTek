@@ -82,11 +82,43 @@ export interface HealthSummaryApiResponse {
   totalCases: number;
 }
 
+export interface AlertApiResponse {
+  id: number;
+  municipality: MunicipalitySummary;
+  alertType: string;
+  message: string;
+  isActive: boolean;
+  scheduledFor: string | null;
+  createdAt: string;
+}
+
 // ─── Cliente HTTP ─────────────────────────────────────────────────────────────
 
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${BASE}${path}`);
   if (!res.ok) throw new Error(`API ${res.status}: ${path}`);
+  return res.json() as Promise<T>;
+}
+
+async function post<T>(path: string, body?: any): Promise<T> {
+  const res = await fetch(`${BASE}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) throw new Error(`API ${res.status}: ${path}`);
+  return res.json() as Promise<T>;
+}
+
+async function put<T>(path: string, body?: any): Promise<T> {
+  const res = await fetch(`${BASE}${path}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) throw new Error(`API ${res.status}: ${path}`);
+  // Handle 204 No Content
+  if (res.status === 204) return {} as T;
   return res.json() as Promise<T>;
 }
 
@@ -122,6 +154,14 @@ export const api = {
       get<IrsaTrendApiResponse>(
         `/api/irsa/trend/${id}?period=${period}&count=${count}`
       ),
+  },
+  alerts: {
+    subscribe: (userId: number, municipalityId: number) =>
+      post<AlertApiResponse>(`/api/alerts/subscribe?userId=${userId}&municipalityId=${municipalityId}`),
+    listActiveByUser: (userId: number) =>
+      get<AlertApiResponse[]>(`/api/alerts/user/${userId}/active`),
+    deactivate: (alertId: number) =>
+      put<void>(`/api/alerts/${alertId}/deactivate`),
   },
 };
 

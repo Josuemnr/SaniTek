@@ -1,12 +1,15 @@
-import { ArrowLeft, Wind, Gauge, Leaf } from "lucide-react";
+import { ArrowLeft, Wind, Gauge, Leaf, Bell, BellOff, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useRiskStore } from "@/store/useRiskStore";
 import { useDetalleAlcaldia } from "@/hooks/useDetalleAlcaldia";
-import { getDetalleAlcaldia, type RiskTag } from "@/components/modules/detalle-alcaldia/detalle-alcaldia-data";
-import { IRSACard } from "@/components/modules/detalle-alcaldia/IRSACard";
-import { VariablesGrid } from "@/components/modules/detalle-alcaldia/VariablesGrid";
-import { VariableCard } from "@/components/modules/detalle-alcaldia/VariableCard";
+import { useAlerts } from "@/hooks/useAlerts";
+import { useAuth } from "@/Context/AuthContext";
+import { getDetalleAlcaldia, type RiskTag } from "@/Components/modules/detalle-alcaldia/detalle-alcaldia-data";
+import { IRSACard } from "@/Components/modules/detalle-alcaldia/IRSACard";
+import { VariablesGrid } from "@/Components/modules/detalle-alcaldia/VariablesGrid";
+import { VariableCard } from "@/Components/modules/detalle-alcaldia/VariableCard";
 import { cn } from "@/lib/utils";
+import { ALCALDIA_ID } from "@/Services/backendApi";
 import type { IrsaDiagnosticoApiResponse } from "@/hooks/useDetalleAlcaldia";
 
 // ─── Helpers de riesgo para contaminantes ────────────────────────────────────
@@ -35,13 +38,15 @@ function pm25Tag(v: number): RiskTag {
 
 // ─── Sección de contaminantes (solo si hay datos reales del backend) ──────────
 
-function ContaminantesSection({ diag }: { diag: IrsaDiagnosticoApiResponse }) {
-  const { promediosPorContaminante, medicionesAireEncontradas } = diag;
-  const no2  = promediosPorContaminante["NO2"]   ?? null;
-  const o3   = promediosPorContaminante["O3"]    ?? null;
-  const pm25 = promediosPorContaminante["PM2.5"] ?? null;
+function ContaminantesSection({ diag }: { diag: IrsaDiagnosticApiResponse }) {
+  const { averagesByPollutant, no2Measurements, o3Measurements, pm25Measurements } = diag;
+  const no2  = averagesByPollutant["NO2"]   ?? null;
+  const o3   = averagesByPollutant["O3"]    ?? null;
+  const pm25 = averagesByPollutant["PM2.5"] ?? null;
+  
+  const totalMeasurements = no2Measurements + o3Measurements + pm25Measurements;
 
-  if (medicionesAireEncontradas === 0) {
+  if (totalMeasurements === 0) {
     return (
       <div className="bg-white rounded-xl border border-gray-200 p-5">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
@@ -93,19 +98,27 @@ function ContaminantesSection({ diag }: { diag: IrsaDiagnosticoApiResponse }) {
 // ─── Badge de nivel de rezago social ─────────────────────────────────────────
 
 const REZAGO_COLOR: Record<string, string> = {
-  BAJO:     "text-emerald-600 bg-emerald-50",
-  MEDIO:    "text-yellow-600 bg-yellow-50",
-  ALTO:     "text-orange-600 bg-orange-50",
-  MUY_ALTO: "text-red-600 bg-red-50",
-  "N/D":    "text-gray-500 bg-gray-100",
+  LOW:       "text-emerald-600 bg-emerald-50",
+  MEDIUM:    "text-yellow-600 bg-yellow-50",
+  HIGH:      "text-orange-600 bg-orange-50",
+  VERY_HIGH: "text-red-600 bg-red-50",
+  "N/D":     "text-gray-500 bg-gray-100",
 };
 
 // ─── Página ───────────────────────────────────────────────────────────────────
 
 export function DetalleAlcaldiaPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { selectedAlcaldia } = useRiskStore();
-  const { detalle, diagRaw, loading } = useDetalleAlcaldia(selectedAlcaldia);
+  const { detalle, diagRaw, loading: loadingDiag } = useDetalleAlcaldia(selectedAlcaldia);
+
+  // Mapear el ID de la alcaldía para la suscripción
+  const municipalityId = selectedAlcaldia ? ALCALDIA_ID[selectedAlcaldia] : null;
+  // TODO: Obtener el ID numérico del usuario desde el backend. Por ahora usamos un mock o asumimos que se manejará.
+  const mockUserId = 1; 
+  
+  const { isSubscribed, toggleSubscription, loading: loadingAlert } = useAlerts(user ? mockUserId : null, municipalityId);
 
   const data = detalle ?? getDetalleAlcaldia(selectedAlcaldia ?? "");
 
@@ -121,25 +134,43 @@ export function DetalleAlcaldiaPage() {
 
       {/* Encabezado */}
       <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-black text-gray-900">Alcaldía {data.nombre}</h1>
-          <p className="text-sm text-gray-500 mt-1">{data.ciudad}</p>
-          {loading && (
-            <p className="text-xs text-blue-400 mt-1">Cargando datos en tiempo real...</p>
-          )}
+        <div className="flex items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-black text-gray-900">Alcaldía {data.nombre}</h1>
+            <p className="text-sm text-gray-500 mt-1">{data.ciudad}</p>
+          </div>
+          <button
+            onClick={toggleSubscription}
+            disabled={loadingAlert}
+            className={cn(
+              "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-sm",
+              isSubscribed 
+                ? "bg-primary text-white hover:bg-primary/90" 
+                : "bg-white text-gray-600 border border-gray-200 hover:border-primary hover:text-primary"
+            )}
+          >
+            {loadingAlert ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : isSubscribed ? (
+              <BellOff className="w-4 h-4" />
+            ) : (
+              <Bell className="w-4 h-4" />
+            )}
+            {isSubscribed ? "Quitar alerta" : "Notificarme"}
+          </button>
         </div>
         {diagRaw && (
           <div className="flex flex-col items-end gap-1">
             <span
               className={cn(
                 "text-[11px] font-semibold px-2.5 py-1 rounded-full",
-                REZAGO_COLOR[diagRaw.nivelRezagoSocial] ?? REZAGO_COLOR["N/D"]
+                REZAGO_COLOR[diagRaw.socialIndex] ?? REZAGO_COLOR["N/D"]
               )}
             >
-              Rezago social: {diagRaw.nivelRezagoSocial.replace("_", " ")}
+              Rezago social: {(diagRaw.socialIndex || "N/D").replace("_", " ")}
             </span>
             <span className="text-[10px] text-gray-400">
-              {diagRaw.medicionesAireEncontradas} medición(es) en 24 h
+              {diagRaw.no2Measurements + diagRaw.o3Measurements + diagRaw.pm25Measurements} medición(es) en 24 h
             </span>
           </div>
         )}
@@ -161,9 +192,9 @@ export function DetalleAlcaldiaPage() {
           </p>
           <div className="grid grid-cols-3 gap-4">
             {[
-              { label: "Calidad del Aire", score: diagRaw.puntajeAire,           color: "bg-cyan-400"   },
-              { label: "Clima",            score: diagRaw.puntajeClima,           color: "bg-sky-400"    },
-              { label: "Factor Social",    score: diagRaw.puntajeSocioeconomico,  color: "bg-purple-400" },
+              { label: "Calidad del Aire", score: diagRaw.airScore * 100,           color: "bg-cyan-400"   },
+              { label: "Clima",            score: diagRaw.climateScore * 100,       color: "bg-sky-400"    },
+              { label: "Factor Social",    score: diagRaw.socioScore * 100,         color: "bg-purple-400" },
             ].map(({ label, score, color }) => (
               <div key={label}>
                 <div className="flex justify-between items-center mb-1">
