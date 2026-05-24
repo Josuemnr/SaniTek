@@ -4,7 +4,7 @@ import {
   getDetalleAlcaldia,
   type DetalleAlcaldia,
   type RiskTag,
-} from '@/components/modules/detalle-alcaldia/detalle-alcaldia-data';
+} from '@/Components/modules/detalle-alcaldia/detalle-alcaldia-data';
 
 export type { IrsaDiagnosticApiResponse };
 
@@ -28,24 +28,23 @@ function irsaDescripcion(irsa: number): string {
 }
 
 function toDetalle(diag: IrsaDiagnosticApiResponse): DetalleAlcaldia {
-  const irsa = Math.round(diag.irsaValue * 1000) / 10; // 0-1 → 0-100
-  const pm25 = diag.averagesByPollutant['PM2.5'] ?? null;
+  const irsa = Math.round((diag.irsaValue || 0) * 1000) / 10; // 0-1 → 0-100
+  const averages = diag.averagesByPollutant || {};
+  const pm25 = averages['PM2.5'] ?? null;
   const calidadAire =
     pm25 !== null ? Math.min(100, Math.round((pm25 / 45) * 100)) : 50;
 
   return {
-    nombre: diag.municipalityName,
+    nombre: diag.municipalityName || 'Desconocida',
     ciudad: 'Ciudad de México, México',
     irsa,
     irsaMax: 100,
     irsaDescripcion: irsaDescripcion(irsa),
     variables: {
-      // El nuevo backend no retorna temperatura/humedad directamente en el diagnóstico;
-      // se usan valores por defecto razonables para CDMX.
       temperatura:       20,
       humedad:           60,
       calidadAire,
-      riesgoTemperatura: riskLevelToTag(diag.riskLevel),
+      riesgoTemperatura: riskLevelToTag(diag.riskLevel || 'MODERATE'),
     },
   };
 }
@@ -59,6 +58,7 @@ export function useDetalleAlcaldia(nombreAlcaldia: string | null) {
 
   useEffect(() => {
     if (!nombreAlcaldia) return;
+    console.log('[useDetalleAlcaldia] Fetching data for:', nombreAlcaldia);
     const id = ALCALDIA_ID[nombreAlcaldia];
     if (!id) return;
 

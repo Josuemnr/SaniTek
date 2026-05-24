@@ -10,6 +10,7 @@ import { Button } from '@/Components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -56,16 +57,8 @@ export function DashboardShell() {
   const pageTitle = activeLink?.pageTitle ?? screenConfig?.pageTitle ?? "";
   const subtitle  = activeLink?.subtitle  ?? screenConfig?.subtitle;
 
-  // Filtrar links según el rol
-  const filteredAdminLinks = ADMIN_LINKS.filter(link => {
-    if (role === 'SUPER_ADMIN') return true; // SuperAdmin ve todo
-    if (role === 'ADMIN') {
-      // Admin ve estatus de usuarios y perfil
-      return link.href === "/Gestion_Usuarios" || link.href === "/Perfil_Usuario";
-    }
-    // Usuario normal solo ve su perfil
-    return link.href === "/Perfil_Usuario";
-  });
+  // BYPASS: Mostrar todos los links en desarrollo ignorando roles
+  const filteredAdminLinks = ADMIN_LINKS;
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background">
@@ -90,28 +83,28 @@ export function DashboardShell() {
 
         <div className="mt-auto flex flex-col gap-2 border-t pt-4">
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-sidebar-accent/30 cursor-pointer transition-colors group">
-                <Avatar className="h-9 w-9 border">
-                  <AvatarImage src="" />
-                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">CM</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col overflow-hidden flex-1">
-                  <span className="text-xs font-bold truncate text-gray-700">Carlos Méndez</span>
-                  <span className="text-[10px] text-muted-foreground truncate">Gerente logística</span>
-                </div>
-                <ChevronUp className="size-4 text-muted-foreground group-data-[state=open]:rotate-180 transition-transform" />
+            <DropdownMenuTrigger className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-sidebar-accent/30 cursor-pointer transition-colors group border-none bg-transparent w-full text-left outline-none">
+              <Avatar className="h-9 w-9 border">
+                <AvatarImage src="" />
+                <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">CM</AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col overflow-hidden flex-1">
+                <span className="text-xs font-bold truncate text-gray-700">Carlos Méndez</span>
+                <span className="text-[10px] text-muted-foreground truncate">Gerente logística</span>
               </div>
+              <ChevronUp className="size-4 text-muted-foreground group-data-[state=open]:rotate-180 transition-transform" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" side="top" className="w-56 mb-2 ml-4">
-              <DropdownMenuLabel>Configuración</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {filteredAdminLinks.map((item) => (
-                <DropdownMenuItem key={item.title} onClick={() => navigate(item.href)}>
-                  <item.icon className="mr-2 size-4" />
-                  <span>{item.title}</span>
-                </DropdownMenuItem>
-              ))}
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>Configuración</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {filteredAdminLinks.map((item) => (
+                  <DropdownMenuItem key={item.title} onClick={() => navigate(item.href)}>
+                    <item.icon className="mr-2 size-4" />
+                    <span>{item.title}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
                 <LogOut className="mr-2 size-4" />
@@ -119,10 +112,6 @@ export function DashboardShell() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
-          <div className="flex flex-col gap-1 mt-2">
-            <SidebarItem icon={Settings} label="Configuración" />
-          </div>
         </div>
       </aside>
 
@@ -132,20 +121,6 @@ export function DashboardShell() {
           <div className="flex flex-col justify-center">
             <h2 className="text-xl font-bold tracking-tight text-foreground leading-tight">{pageTitle}</h2>
             {subtitle && <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>}
-          </div>
-          <div className="flex items-center gap-4 max-w-md w-full justify-end">
-            <div className="relative w-64 hidden sm:block">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Buscar en la sección..."
-                className="pl-9 h-9 bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-ring"
-              />
-            </div>
-            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full relative">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-2 right-2 h-2 w-2 bg-destructive rounded-full border-2 border-background" />
-            </Button>
           </div>
         </header>
 

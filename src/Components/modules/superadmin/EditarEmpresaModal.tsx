@@ -65,9 +65,6 @@ export function EditarEmpresaModal({ empresa, onClose, onSave }: EditarEmpresaMo
 
         {/* Fields */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <p style={{ margin: '0 0 4px', fontSize: 11, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Empresa</p>
-          {field('Nombre de la empresa', 'nombre', nombre, setNombre)}
-
           <p style={{ margin: '4px 0 4px', fontSize: 11, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Administrador</p>
           {field('Nombre completo', 'nombreAdmin', nombreAdmin, setNombreAdmin)}
           {field('Correo electrónico', 'correoAdmin', correoAdmin, setCorreoAdmin, { type: 'email' })}

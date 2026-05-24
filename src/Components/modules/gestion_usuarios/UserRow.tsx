@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit2, MoreVertical } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { UserAvatar } from '../../UserAvatar';
 import { RoleBadge } from './RoleBadge';
 import type { Role } from './RoleBadge';
@@ -19,11 +19,18 @@ export interface User {
 
 interface Props {
   user: User;
-  onEdit: (user: User) => void;
+  onToggleStatus: (userId: number) => void;
 }
 
-export const UserRow: React.FC<Props> = ({ user, onEdit }) => (
-  <tr style={{ borderBottom: '1px solid #f3f4f6' }}>
+export const UserRow: React.FC<Props> = ({ user, onToggleStatus }) => (
+  <motion.tr
+    layout
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, x: -20 }}
+    transition={{ duration: 0.2 }}
+    style={{ borderBottom: '1px solid #f3f4f6', background: 'white' }}
+  >
     <td style={{ padding: '14px 24px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <UserAvatar name={user.name} bgColor={user.avatarColor} />
@@ -37,38 +44,44 @@ export const UserRow: React.FC<Props> = ({ user, onEdit }) => (
       <RoleBadge role={user.role} />
     </td>
     <td style={{ padding: '14px 24px' }}>
-      <span style={{ fontSize: 14, color: user.status === 'Activo' ? '#374151' : '#9ca3af', fontWeight: 500 }}>
-        {user.status}
-      </span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <motion.span 
+          animate={{ color: user.status === 'Activo' ? '#16a34a' : '#9ca3af' }}
+          style={{ fontSize: 13, fontWeight: 700, width: 60 }}
+        >
+          {user.status}
+        </motion.span>
+        <div 
+          onClick={() => onToggleStatus(user.id)}
+          style={{
+            position: 'relative',
+            width: 44,
+            height: 22,
+            backgroundColor: user.status === 'Activo' ? '#22c55e' : '#cbd5e1',
+            borderRadius: 20,
+            cursor: 'pointer',
+            padding: 2,
+            transition: 'background-color 0.3s ease',
+            boxShadow: user.status === 'Activo' ? '0 0 12px rgba(34,197,94,0.3)' : 'none'
+          }}
+        >
+          <motion.div
+            animate={{ x: user.status === 'Activo' ? 22 : 0 }}
+            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+            style={{
+              width: 18,
+              height: 18,
+              backgroundColor: 'white',
+              borderRadius: '50%',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+            }}
+          />
+        </div>
+      </div>
     </td>
     <td style={{ padding: '14px 24px' }}>
       <p style={{ margin: 0, fontSize: 13, color: '#6b7280' }}>{user.lastAccessLabel}</p>
       <p style={{ margin: 0, fontSize: 12, color: '#9ca3af' }}>{user.lastAccessDate}</p>
     </td>
-    <td style={{ padding: '14px 24px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <button
-          onClick={() => onEdit(user)}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 4,
-            border: 'none', background: 'none', cursor: 'pointer',
-            color: '#3b82f6', fontSize: 13, fontWeight: 500,
-            padding: '4px 8px', borderRadius: 6,
-          }}
-        >
-          <Edit2 size={13} />
-          Editar
-        </button>
-        <button
-          style={{
-            border: 'none', background: 'none', cursor: 'pointer',
-            color: '#9ca3af', padding: 4, borderRadius: 6,
-            display: 'flex', alignItems: 'center',
-          }}
-        >
-          <MoreVertical size={16} />
-        </button>
-      </div>
-    </td>
-  </tr>
+  </motion.tr>
 );

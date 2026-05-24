@@ -1,14 +1,13 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import type { User } from './UserRow';
-import type { Role } from './RoleBadge';
+import { usePasswordStrength, STRENGTH_CONFIG } from '@/hooks/usePasswordStrength';
 
 interface Props {
   onClose: () => void;
   onSave: (user: Omit<User, 'id'>) => void;
 }
 
-const ROLES: Role[] = ['Administrador', 'Gerente', 'Director'];
 const AVATAR_COLORS = ['#ef4444', '#f97316', '#ec4899', '#6366f1', '#10b981', '#3b82f6', '#8b5cf6'];
 
 const inputStyle: React.CSSProperties = {
@@ -26,8 +25,12 @@ const inputStyle: React.CSSProperties = {
 export const NewUserModal: React.FC<Props> = ({ onClose, onSave }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState<Role>('Gerente');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
+
+  const { results, level, isValid } = usePasswordStrength(password);
+  const strength = STRENGTH_CONFIG[level];
 
   const validate = () => {
     const e: { name?: string; email?: string } = {};
@@ -39,7 +42,10 @@ export const NewUserModal: React.FC<Props> = ({ onClose, onSave }) => {
 
   const handleSave = () => {
     const e = validate();
-    if (Object.keys(e).length > 0) { setErrors(e); return; }
+    if (Object.keys(e).length > 0 || !isValid) { 
+      setErrors(e); 
+      return; 
+    }
 
     const now = new Date();
     const dateStr = now.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })
@@ -48,7 +54,7 @@ export const NewUserModal: React.FC<Props> = ({ onClose, onSave }) => {
     onSave({
       name: name.trim(),
       email: email.trim(),
-      role,
+      role: 'Usuario', // Rol por defecto según requerimiento
       status: 'Activo',
       lastAccessLabel: 'Recién creado',
       lastAccessDate: dateStr,
@@ -63,12 +69,17 @@ export const NewUserModal: React.FC<Props> = ({ onClose, onSave }) => {
       onClick={onClose}
     >
       <div
-        style={{ background: 'white', borderRadius: 16, padding: 28, width: 420, boxShadow: '0 20px 60px rgba(0,0,0,0.18)', display: 'flex', flexDirection: 'column', gap: 20 }}
+        style={{ background: 'white', borderRadius: 16, padding: 28, width: 440, boxShadow: '0 20px 60px rgba(0,0,0,0.18)', display: 'flex', flexDirection: 'column', gap: 20 }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#111827' }}>Nuevo Usuario</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ padding: 8, background: '#eff6ff', borderRadius: 10 }}>
+              <ShieldCheck size={20} color="#3b82f6" />
+            </div>
+            <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#111827' }}>Crear Nuevo Usuario</h2>
+          </div>
           <button onClick={onClose} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#6b7280', display: 'flex' }}>
             <X size={18} />
           </button>
@@ -101,32 +112,70 @@ export const NewUserModal: React.FC<Props> = ({ onClose, onSave }) => {
             {errors.email && <p style={{ margin: '4px 0 0', fontSize: 11, color: '#ef4444' }}>{errors.email}</p>}
           </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#6b7280', marginBottom: 6 }}>Rol</label>
-            <select
-              value={role}
-              onChange={e => setRole(e.target.value as Role)}
-              style={{ ...inputStyle, cursor: 'pointer' }}
-            >
-              {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
-            </select>
+          <div style={{ position: 'relative' }}>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#6b7280', marginBottom: 6 }}>Contraseña temporal</label>
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Mín. 8 caracteres"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                style={{ ...inputStyle, paddingRight: 40 }}
+              />
+              <button 
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', border: 'none', background: 'none', cursor: 'pointer', color: '#9ca3af' }}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+
+            {/* Password Strength UI */}
+            {password.length > 0 && (
+              <div style={{ marginTop: 10 }}>
+                <div style={{ display: 'flex', gap: 4, height: 4, marginBottom: 6 }}>
+                  {[1,2,3,4,5].map((s) => (
+                    <div key={s} style={{ flex: 1, borderRadius: 2, background: s <= strength.segments ? strength.color : '#f3f4f6', transition: '0.3s' }} />
+                  ))}
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  {results.map(rule => (
+                    <div key={rule.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: rule.passed ? '#16a34a' : '#9ca3af' }}>
+                      <div style={{ width: 4, height: 4, borderRadius: '50%', background: rule.passed ? '#16a34a' : '#cbd5e1' }} />
+                      {rule.label}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
         </div>
 
         {/* Buttons */}
-        <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 10 }}>
           <button
             onClick={onClose}
-            style={{ padding: '9px 20px', borderRadius: 10, fontSize: 13, fontWeight: 500, border: '1px solid #e5e7eb', background: 'white', color: '#374151', cursor: 'pointer' }}
+            style={{ padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 500, border: '1px solid #e5e7eb', background: 'white', color: '#374151', cursor: 'pointer' }}
           >
             Cancelar
           </button>
           <button
             onClick={handleSave}
-            style={{ padding: '9px 20px', borderRadius: 10, fontSize: 13, fontWeight: 500, border: 'none', background: '#3b82f6', color: 'white', cursor: 'pointer' }}
+            disabled={!isValid || !name || !email}
+            style={{ 
+              padding: '10px 24px', 
+              borderRadius: 10, 
+              fontSize: 13, 
+              fontWeight: 600, 
+              border: 'none', 
+              background: isValid && name && email ? '#3b82f6' : '#cbd5e1', 
+              color: 'white', 
+              cursor: isValid && name && email ? 'pointer' : 'not-allowed',
+              transition: '0.3s'
+            }}
           >
-            Guardar
+            Crear Usuario
           </button>
         </div>
 

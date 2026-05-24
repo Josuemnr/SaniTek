@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { api, type IrsaDiagnosticoApiResponse, type IrsaApiResponse, ALCALDIA_ID } from '@/Services/backendApi';
+import { api, type IrsaDiagnosticApiResponse, type IrsaApiResponse, ALCALDIA_ID } from '@/Services/backendApi';
 
 interface AlcaldiaPanelData {
   id: number;
@@ -43,31 +43,30 @@ export function useAlcaldiaPanel(nombreAlcaldia: string | null): UseAlcaldiaPane
     setError(null);
 
     // Llamamos ambos endpoints en paralelo:
-    // - porAlcaldia: valor almacenado en DB (misma fuente que el popup del mapa)
-    // - diagnostico: detalles de clima y contaminantes (calculado al vuelo)
+    // - getByMunicipality: valor almacenado en DB
+    // - diagnostic: detalles de clima y contaminantes
     Promise.all([
-      api.irsa.porAlcaldia(id),
-      api.irsa.diagnostico(id),
+      api.irsa.getByMunicipality(id),
+      api.irsa.diagnostic(id),
     ])
-      .then(([stored, diag]: [IrsaApiResponse, IrsaDiagnosticoApiResponse]) => {
+      .then(([stored, diag]: [IrsaApiResponse, IrsaDiagnosticApiResponse]) => {
         if (cancelled) return;
         setData({
-          id:                       stored.alcaldia.id,
-          nombre:                   stored.alcaldia.nombre,
-          // nivel e IRSA vienen del valor almacenado → consistente con el popup
-          nivelRiesgo:              stored.nivelRiesgo,
-          valorIrsa:                stored.valorIrsa,
-          // detalles de calidad del aire y clima desde el diagnóstico
-          puntajeAire:              diag.puntajeAire,
-          puntajeClima:             diag.puntajeClima,
-          humedad:                  diag.humedad,
-          temperatura:              diag.temperatura,
-          promediosPorContaminante: diag.promediosPorContaminante,
-          tieneDataClima:           diag.tieneDataClima,
+          id:                       stored.municipality.id,
+          nombre:                   stored.municipality.municipalityName,
+          nivelRiesgo:              stored.riskLevel,
+          valorIrsa:                stored.irsaValue,
+          puntajeAire:              diag.airScore,
+          puntajeClima:             diag.climateScore,
+          humedad:                  60, // Default local
+          temperatura:              20, // Default local
+          promediosPorContaminante: diag.averagesByPollutant,
+          tieneDataClima:           diag.hasTemperatureData,
         });
       })
-      .catch(() => {
+      .catch((err) => {
         if (cancelled) return;
+        console.error('[useAlcaldiaPanel] error:', err);
         setError('No se pudo cargar la información de esta alcaldía');
       })
       .finally(() => {

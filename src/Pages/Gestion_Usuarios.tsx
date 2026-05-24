@@ -4,8 +4,8 @@ import { FilterTab } from '../Components/modules/gestion_usuarios/FilterTab';
 import { UserRow } from '../Components/modules/gestion_usuarios/UserRow';
 import type { User } from '../Components/modules/gestion_usuarios/UserRow';
 import { PaginationBar } from '../Components/modules/gestion_usuarios/PaginationBar';
-import { EditUserPanel } from '../Components/modules/gestion_usuarios/EditUserPanel';
 import { NewUserModal } from '../Components/modules/gestion_usuarios/NewUserModal';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type FilterType = 'Activos' | 'Inactivos' | 'Administradores';
 
@@ -24,7 +24,6 @@ export default function GestionUsuarios() {
   const [activeFilter, setActiveFilter] = useState<FilterType>('Activos');
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [editingUser, setEditingUser] = useState<User | null>(INITIAL_USERS[0]);
   const [showModal, setShowModal] = useState(false);
 
   const filtered = users.filter(u => {
@@ -33,7 +32,7 @@ export default function GestionUsuarios() {
       activeFilter === 'Inactivos'       ? u.status === 'Inactivo' :
       u.role === 'Administrador';
     const matchesSearch =
-      !search || //para que no filtre si el campo de búsqueda está vacío
+      !search ||
       u.name.toLowerCase().includes(search.toLowerCase()) ||
       u.email.toLowerCase().includes(search.toLowerCase());
     return matchesFilter && matchesSearch;
@@ -47,7 +46,15 @@ export default function GestionUsuarios() {
     setUsers(prev => [newUser, ...prev]);
     setActiveFilter('Activos');
     setCurrentPage(1);
-    setEditingUser(newUser);
+  };
+
+  const handleToggleStatus = (userId: number) => {
+    setUsers(prev => prev.map(u => {
+      if (u.id === userId) {
+        return { ...u, status: u.status === 'Activo' ? 'Inactivo' : 'Activo' };
+      }
+      return u;
+    }));
   };
 
   const handleFilterChange = (f: FilterType) => {
@@ -60,7 +67,7 @@ export default function GestionUsuarios() {
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-        <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: '#111827' }}>Gestión de Usuarios</h1>
+        <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: '#111827' }}>Estatus de Usuarios</h1>
         <button
           onClick={() => setShowModal(true)}
           style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#6fa8f7', color: 'white', border: 'none', borderRadius: 12, padding: '10px 20px', fontSize: 13, fontWeight: 500, cursor: 'pointer', boxShadow: '0 2px 8px rgba(99,162,247,0.4)' }}
@@ -97,7 +104,7 @@ export default function GestionUsuarios() {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid #f3f4f6' }}>
-                {['Usuario', 'Rol', 'Estado', 'Último Acceso', 'Acciones'].map(col => (
+                {['Usuario', 'Rol', 'Estatus', 'Último Acceso'].map(col => (
                   <th key={col} style={{ padding: '14px 24px', textAlign: 'left', fontSize: 11, fontWeight: 500, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     {col}
                   </th>
@@ -105,16 +112,22 @@ export default function GestionUsuarios() {
               </tr>
             </thead>
             <tbody>
-              {paginated.length > 0
-                ? paginated.map(user => <UserRow key={user.id} user={user} onEdit={setEditingUser} />)
-                : (
-                  <tr>
-                    <td colSpan={5} style={{ padding: '40px 24px', textAlign: 'center', color: '#9ca3af', fontSize: 14 }}>
-                      No se encontraron usuarios.
-                    </td>
-                  </tr>
-                )
-              }
+              <AnimatePresence mode="popLayout">
+                {paginated.length > 0
+                  ? paginated.map(user => <UserRow key={user.id} user={user} onToggleStatus={handleToggleStatus} />)
+                  : (
+                    <motion.tr
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      key="empty"
+                    >
+                      <td colSpan={4} style={{ padding: '40px 24px', textAlign: 'center', color: '#9ca3af', fontSize: 14 }}>
+                        No se encontraron usuarios.
+                      </td>
+                    </motion.tr>
+                  )
+                }
+              </AnimatePresence>
             </tbody>
           </table>
           <PaginationBar
@@ -125,11 +138,6 @@ export default function GestionUsuarios() {
             onPageChange={setCurrentPage}
           />
         </div>
-
-        {/* Edit panel */}
-        {editingUser && (
-          <EditUserPanel user={editingUser} onClose={() => setEditingUser(null)} />
-        )}
       </div>
 
       {/* Modal */}

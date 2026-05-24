@@ -4,6 +4,7 @@ import { ProfileCard } from '../Components/modules/perfil_usuario/ProfileCard';
 import { PasswordInput } from '../Components/modules/perfil_usuario/PasswordInput';
 import { UserAvatar } from '../Components/UserAvatar';
 import { validatePasswordStrict } from '@/hooks/usePasswordStrength';
+import { useAuth } from '@/Context/AuthContext';
 
 const sectionCard: React.CSSProperties = {
   background: 'white', borderRadius: 16,
@@ -19,9 +20,10 @@ const inputStyle: React.CSSProperties = {
 };
 
 export default function PerfilUsuario() {
+  const { user } = useAuth();
   // info personal
-  const [name,  setName]  = useState('Josué Monroy Larios');
-  const [email, setEmail] = useState('josue.monroy@sanitek.com');
+  const [name,  setName]  = useState(user?.displayName ?? 'Usuario SaniTek');
+  const [email, setEmail] = useState(user?.email ?? '');
 
   // Password
   const [currentPwd, setCurrentPwd] = useState('');
@@ -53,29 +55,14 @@ export default function PerfilUsuario() {
   };
 
   return (
-    <div style={{ flex: 1, background: '#f8fafc', boxSizing: 'border-box' }}>
-
-      {/* Page header (Opcional, ya que DashboardShell tiene header, 
-          pero este puede servir como sub-header de perfil) */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 32px', borderBottom: '1px solid #e5e7eb', background: 'white' }}>
-        <h1 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#111827' }}>Configuración de Perfil</h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <button style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#6b7280', display: 'flex', position: 'relative' }}>
-            <Bell size={20} />
-            <span style={{ position: 'absolute', top: -2, right: -2, width: 8, height: 8, borderRadius: '50%', background: '#ef4444', border: '1.5px solid white' }} />
-          </button>
-          <UserAvatar name="Josué Monroy" bgColor="#7b9ab3" size="sm" />
-        </div>
-      </div>
-
+    <div className="h-full overflow-y-auto bg-[#f8fafc]">
       {/* Content */}
-      <div style={{ maxWidth: 720, margin: '0 auto', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div className="max-w-[720px] mx-auto py-8 px-6 flex flex-col gap-5">
 
         {/* Profile card */}
         <ProfileCard
-          name="Josué Monroy"
-          email="josue.monroy@sanitek.com"
-          onChangeImage={() => {}}
+          name={name}
+          email={email}
         />
 
         {/* Datos Personales */}
