@@ -5,7 +5,7 @@ import {
   getMetricas,
   type DataPoint,
   type Metricas,
-} from '@/components/modules/historial-riesgos/historial-data';
+} from '@/Components/modules/historial-riesgos/historial-data';
 
 const MES_INDEX: Record<string, number> = {
   // El backend nuevo devuelve etiquetas en inglés: "Jan 2025", "Feb 2025", …

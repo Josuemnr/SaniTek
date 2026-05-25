@@ -15,9 +15,9 @@ import {
   ALERTAS_MOCK,
   getAlertasByAlcaldias,
   type Alerta,
-} from "@/components/modules/alertas/alertas-data";
-import { SuscripcionesPanel } from "@/components/modules/alertas/SuscripcionesPanel";
-import { AlertasFeed }        from "@/components/modules/alertas/AlertasFeed";
+} from "@/Components/modules/alertas/alertas-data";
+import { SuscripcionesPanel } from "@/Components/modules/alertas/SuscripcionesPanel";
+import { AlertasFeed }        from "@/Components/modules/alertas/AlertasFeed";
 
 // ─── Stat card pequeña ───────────────────────────────────────────────────────
 interface StatCardProps {
