@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { api, ALCALDIA_ID, type IrsaDiagnosticApiResponse } from '@/Services/backendApi';
+import { api, getAlcaldiaId, type IrsaDiagnosticApiResponse } from '@/Services/backendApi';
 import {
   getDetalleAlcaldia,
   type DetalleAlcaldia,
@@ -28,11 +28,8 @@ function irsaDescripcion(irsa: number): string {
 }
 
 function toDetalle(diag: IrsaDiagnosticApiResponse): DetalleAlcaldia {
-  const irsa = Math.round((diag.irsaValue || 0) * 1000) / 10; // 0-1 → 0-100
-  const averages = diag.averagesByPollutant || {};
-  const pm25 = averages['PM2.5'] ?? null;
-  const calidadAire =
-    pm25 !== null ? Math.min(100, Math.round((pm25 / 45) * 100)) : 50;
+  const irsa = Math.round((diag.irsaScore || 0) * 10) / 10;
+  const calidadAire = Math.round((diag.pollutantScore || 0) * 100);
 
   return {
     nombre: diag.municipalityName || 'Desconocida',
@@ -57,10 +54,20 @@ export function useDetalleAlcaldia(nombreAlcaldia: string | null) {
   const [loading, setLoading]   = useState(false);
 
   useEffect(() => {
-    if (!nombreAlcaldia) return;
+    if (!nombreAlcaldia) {
+      setDetalle(null);
+      setDiagRaw(null);
+      setLoading(false);
+      return;
+    }
     console.log('[useDetalleAlcaldia] Fetching data for:', nombreAlcaldia);
-    const id = ALCALDIA_ID[nombreAlcaldia];
-    if (!id) return;
+    const id = getAlcaldiaId(nombreAlcaldia);
+    if (!id) {
+      setDetalle(getDetalleAlcaldia(nombreAlcaldia));
+      setDiagRaw(null);
+      setLoading(false);
+      return;
+    }
 
     setLoading(true);
     api.irsa

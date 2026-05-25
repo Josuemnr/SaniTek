@@ -31,16 +31,21 @@ export default function Login() {
     setIsLoading(true);
     try {
       const token = await loginUser(email, password);
-      console.log('Firebase ID Token:', token);
+      console.log('Backend ID Token:', token);
       navigate('/', { replace: true });
     } catch (err: unknown) {
       const code = (err as { code?: string }).code ?? '';
+      const message = err instanceof Error ? err.message : '';
       if (code === 'auth/invalid-credential' || code === 'auth/user-not-found' || code === 'auth/wrong-password') {
         setErrorMessage('Correo o contraseña incorrectos.');
       } else if (code === 'auth/invalid-email') {
         setErrorMessage('El formato del correo no es válido.');
       } else if (code === 'auth/too-many-requests') {
         setErrorMessage('Demasiados intentos. Intenta más tarde.');
+      } else if (message.includes('Invalid email or password') || message.includes('401')) {
+        setErrorMessage('Correo o contraseña incorrectos.');
+      } else if (message.includes('Firebase web API key is not configured')) {
+        setErrorMessage('El backend no tiene configurada la API key de Firebase.');
       } else {
         setErrorMessage('Ocurrió un error. Intenta de nuevo.');
       }

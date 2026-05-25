@@ -19,12 +19,8 @@ import { AlertasPage }          from "@/Pages/AlertasPage";
 import { Toaster } from 'sonner';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
-  // BYPASS: Siempre permite el acceso en local para desarrollo
-  return <>{children}</>;
-  /*
   const { user } = useAuth();
   return user ? <>{children}</> : <Navigate to="/login" replace />;
-  */
 }
 
 export default function App() {

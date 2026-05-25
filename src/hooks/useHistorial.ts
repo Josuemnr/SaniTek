@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { api, ALCALDIA_ID, type TrendPointApi } from '@/Services/backendApi';
+import { api, getAlcaldiaId, type TrendPointApi } from '@/Services/backendApi';
 import {
   DATA_CDMX,
   getMetricas,
@@ -29,10 +29,10 @@ function etiquetaMesIndex(etiqueta: string): number {
 
 function puntosADataPoints(puntos: TrendPointApi[]): DataPoint[] {
   return puntos.map((p, i, arr) => {
-    const indice = Math.round(p.avgIrsa * 1000) / 10;
+    const indice = Math.round(p.avgIrsa * 10) / 10;
     const ventana = arr.slice(Math.max(0, i - 2), i + 1);
     const tendencia = Math.round(
-      (ventana.reduce((s, w) => s + w.avgIrsa, 0) / ventana.length) * 1000
+      (ventana.reduce((s, w) => s + w.avgIrsa, 0) / ventana.length) * 10
     ) / 10;
     return { mes: etiquetaAMes(p.label), indice, tendencia };
   });
@@ -49,7 +49,7 @@ export function useHistorial(nombreAlcaldia: string | null, selectedYear: number
   // Fetch a wide range (48 months) when alcaldía changes — covers ~4 years
   useEffect(() => {
     const nombre = nombreAlcaldia ?? 'Cuauhtémoc';
-    const id     = ALCALDIA_ID[nombre] ?? 6;
+    const id     = getAlcaldiaId(nombre) ?? getAlcaldiaId('Cuauhtemoc') ?? 12;
 
     setLoading(true);
     api.irsa

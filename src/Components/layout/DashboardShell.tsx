@@ -1,12 +1,10 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Settings, LogOut, Search, Bell, CreditCard,UserCog,ShieldCheck, Users, ChevronUp } from "lucide-react";
+import { LogOut, CreditCard, UserCog, ShieldCheck, Users, ChevronUp } from "lucide-react";
 import { useAuth } from "@/Context/AuthContext";
 import logo from '@/assets/logo.png';
 import { NAV_LINKS, SCREEN_CONFIGS } from '@/lib/nav-constants';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
-import { Input } from '@/Components/ui/input';
-import { Button } from '@/Components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,10 +40,33 @@ const SidebarItem = ({ icon: Icon, label, active }: SidebarItemProps) => (
   </div>
 );
 
+function roleLabel(role: string | null) {
+  switch (role) {
+    case 'SUPER_ADMIN':
+      return 'Super administrador';
+    case 'ADMIN':
+      return 'Administrador';
+    case 'USER':
+      return 'Usuario';
+    default:
+      return 'Sin rol';
+  }
+}
+
+function getInitials(value: string) {
+  return value
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase() || 'ST';
+}
+
 export function DashboardShell() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { logout, role } = useAuth();
+  const { user, logout, role } = useAuth();
 
   const handleLogout = async () => {
     await logout();
@@ -59,6 +80,9 @@ export function DashboardShell() {
 
   // BYPASS: Mostrar todos los links en desarrollo ignorando roles
   const filteredAdminLinks = ADMIN_LINKS;
+  const userName = user?.displayName || user?.email || 'Usuario SaniTek';
+  const userRole = roleLabel(role);
+  const userInitials = getInitials(userName);
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background">
@@ -86,11 +110,13 @@ export function DashboardShell() {
             <DropdownMenuTrigger className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-sidebar-accent/30 cursor-pointer transition-colors group border-none bg-transparent w-full text-left outline-none">
               <Avatar className="h-9 w-9 border">
                 <AvatarImage src="" />
-                <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">CM</AvatarFallback>
+                <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
+                  {userInitials}
+                </AvatarFallback>
               </Avatar>
               <div className="flex flex-col overflow-hidden flex-1">
-                <span className="text-xs font-bold truncate text-gray-700">Carlos Méndez</span>
-                <span className="text-[10px] text-muted-foreground truncate">Gerente logística</span>
+                <span className="text-xs font-bold truncate text-gray-700">{userName}</span>
+                <span className="text-[10px] text-muted-foreground truncate">{userRole}</span>
               </div>
               <ChevronUp className="size-4 text-muted-foreground group-data-[state=open]:rotate-180 transition-transform" />
             </DropdownMenuTrigger>

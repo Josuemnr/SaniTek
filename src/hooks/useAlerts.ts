@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { api, type AlertApiResponse } from '@/Services/backendApi';
+import { api } from '@/Services/backendApi';
 import { toast } from 'sonner';
 
 export function useAlerts(userId: number | null, municipalityId: number | null) {
@@ -8,22 +8,25 @@ export function useAlerts(userId: number | null, municipalityId: number | null) 
   const [alertId, setAlertId] = useState<number | null>(null);
 
   useEffect(() => {
-    if (userId && municipalityId) {
-      checkSubscription();
-    }
-  }, [userId, municipalityId]);
+    const checkSubscription = async () => {
+      if (!userId || !municipalityId) {
+        setIsSubscribed(false);
+        setAlertId(null);
+        return;
+      }
 
-  const checkSubscription = async () => {
-    if (!userId || !municipalityId) return;
-    try {
-      const activeAlerts = await api.alerts.listActiveByUser(userId);
-      const sub = activeAlerts.find(a => a.municipality.id === municipalityId);
-      setIsSubscribed(!!sub);
-      if (sub) setAlertId(sub.id);
-    } catch (error) {
-      console.error('Error checking subscription:', error);
-    }
-  };
+      try {
+        const activeAlerts = await api.alerts.listActiveByUser(userId);
+        const sub = activeAlerts.find(a => a.municipality.id === municipalityId);
+        setIsSubscribed(!!sub);
+        setAlertId(sub?.id ?? null);
+      } catch (error) {
+        console.error('Error checking subscription:', error);
+      }
+    };
+
+    void checkSubscription();
+  }, [userId, municipalityId]);
 
   const toggleSubscription = async () => {
     if (!userId || !municipalityId) {

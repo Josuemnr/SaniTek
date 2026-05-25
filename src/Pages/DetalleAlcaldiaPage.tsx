@@ -9,8 +9,8 @@ import { IRSACard } from "@/Components/modules/detalle-alcaldia/IRSACard";
 import { VariablesGrid } from "@/Components/modules/detalle-alcaldia/VariablesGrid";
 import { VariableCard } from "@/Components/modules/detalle-alcaldia/VariableCard";
 import { cn } from "@/lib/utils";
-import { ALCALDIA_ID } from "@/Services/backendApi";
-import type { IrsaDiagnosticoApiResponse } from "@/hooks/useDetalleAlcaldia";
+import { getAlcaldiaId } from "@/Services/backendApi";
+import type { IrsaDiagnosticApiResponse } from "@/hooks/useDetalleAlcaldia";
 
 // ─── Helpers de riesgo para contaminantes ────────────────────────────────────
 
@@ -36,10 +36,19 @@ function pm25Tag(v: number): RiskTag {
   return "Crítico";
 }
 
+function contaminantesDesdeDiagnostico(diag: IrsaDiagnosticApiResponse): Record<string, number> {
+  return {
+    NO2: diag.normNo2 * 100,
+    O3: diag.normO3 * 110,
+    "PM2.5": diag.normPm25 * 45,
+  };
+}
+
 // ─── Sección de contaminantes (solo si hay datos reales del backend) ──────────
 
 function ContaminantesSection({ diag }: { diag: IrsaDiagnosticApiResponse }) {
-  const { averagesByPollutant, no2Measurements, o3Measurements, pm25Measurements } = diag;
+  const { no2Measurements, o3Measurements, pm25Measurements } = diag;
+  const averagesByPollutant = contaminantesDesdeDiagnostico(diag);
   const no2  = averagesByPollutant["NO2"]   ?? null;
   const o3   = averagesByPollutant["O3"]    ?? null;
   const pm25 = averagesByPollutant["PM2.5"] ?? null;
@@ -99,6 +108,8 @@ function ContaminantesSection({ diag }: { diag: IrsaDiagnosticApiResponse }) {
 
 const REZAGO_COLOR: Record<string, string> = {
   LOW:       "text-emerald-600 bg-emerald-50",
+  MODERATE:  "text-yellow-600 bg-yellow-50",
+  CRITICAL:  "text-red-600 bg-red-50",
   MEDIUM:    "text-yellow-600 bg-yellow-50",
   HIGH:      "text-orange-600 bg-orange-50",
   VERY_HIGH: "text-red-600 bg-red-50",
@@ -111,10 +122,10 @@ export function DetalleAlcaldiaPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { selectedAlcaldia } = useRiskStore();
-  const { detalle, diagRaw, loading: loadingDiag } = useDetalleAlcaldia(selectedAlcaldia);
+  const { detalle, diagRaw } = useDetalleAlcaldia(selectedAlcaldia);
 
   // Mapear el ID de la alcaldía para la suscripción
-  const municipalityId = selectedAlcaldia ? ALCALDIA_ID[selectedAlcaldia] : null;
+  const municipalityId = getAlcaldiaId(selectedAlcaldia);
   // TODO: Obtener el ID numérico del usuario desde el backend. Por ahora usamos un mock o asumimos que se manejará.
   const mockUserId = 1; 
   
@@ -164,10 +175,10 @@ export function DetalleAlcaldiaPage() {
             <span
               className={cn(
                 "text-[11px] font-semibold px-2.5 py-1 rounded-full",
-                REZAGO_COLOR[diagRaw.socialIndex] ?? REZAGO_COLOR["N/D"]
+                REZAGO_COLOR[diagRaw.riskLevel] ?? REZAGO_COLOR["N/D"]
               )}
             >
-              Rezago social: {(diagRaw.socialIndex || "N/D").replace("_", " ")}
+              Riesgo: {(diagRaw.riskLevel || "N/D").replace("_", " ")}
             </span>
             <span className="text-[10px] text-gray-400">
               {diagRaw.no2Measurements + diagRaw.o3Measurements + diagRaw.pm25Measurements} medición(es) en 24 h
@@ -192,9 +203,9 @@ export function DetalleAlcaldiaPage() {
           </p>
           <div className="grid grid-cols-3 gap-4">
             {[
-              { label: "Calidad del Aire", score: diagRaw.airScore * 100,           color: "bg-cyan-400"   },
-              { label: "Clima",            score: diagRaw.climateScore * 100,       color: "bg-sky-400"    },
-              { label: "Factor Social",    score: diagRaw.socioScore * 100,         color: "bg-purple-400" },
+              { label: "Calidad del Aire", score: diagRaw.pollutantScore * 100,                  color: "bg-cyan-400"   },
+              { label: "Clima",            score: ((diagRaw.normUv + diagRaw.normTmp) / 2) * 100, color: "bg-sky-400"    },
+              { label: "Vulnerabilidad",   score: Math.min(100, (diagRaw.vulnerabilityFactor / 2) * 100), color: "bg-purple-400" },
             ].map(({ label, score, color }) => (
               <div key={label}>
                 <div className="flex justify-between items-center mb-1">

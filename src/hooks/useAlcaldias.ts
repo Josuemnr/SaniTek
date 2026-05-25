@@ -9,7 +9,12 @@ import {
 } from '@/Components/modules/filtrar-alcaldias/alcaldias-filter-data';
 
 const NOMBRE_NORMALIZADO: Record<string, string> = {
+  'Alvaro Obregon': 'Álvaro Obregón',
+  'Benito Juarez': 'Benito Juárez',
+  'Coyoacan': 'Coyoacán',
   'Cuajimalpa': 'Cuajimalpa de Morelos',
+  'Cuauhtemoc': 'Cuauhtémoc',
+  'Tlahuac': 'Tláhuac',
 };
 
 const HUMEDAD_TIPICA: Record<string, number> = {
@@ -60,7 +65,7 @@ export function useAlcaldias() {
         const mappedZonas: Zona[] = irsaList.map((irsa) => {
           const nombre = NOMBRE_NORMALIZADO[irsa.municipality.municipalityName]
             ?? irsa.municipality.municipalityName;
-          const calidadAire = Math.round(irsa.irsaValue * 100);
+          const calidadAire = Math.round(irsa.irsaValue);
 
           return {
             id:        String(irsa.municipality.id),
