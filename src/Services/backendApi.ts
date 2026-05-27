@@ -110,6 +110,37 @@ export interface CompanySummaryApiResponse {
   companyName: string;
 }
 
+export interface CompanyApiResponse extends CompanySummaryApiResponse {
+  isActive: boolean;
+}
+
+export interface CreateCompanyApiRequest {
+  companyName: string;
+}
+
+export interface CreateAdminApiRequest {
+  companyId: number;
+  names: string;
+  email: string;
+  password: string;
+}
+
+export interface CreateCompanyUserApiRequest {
+  names: string;
+  email: string;
+  password: string;
+}
+
+export interface UpdateAdminApiRequest {
+  names: string;
+  email: string;
+}
+
+export interface UpdateProfileApiRequest {
+  names: string;
+  email: string;
+}
+
 export interface UserApiResponse {
   id: number;
   names: string | null;
@@ -187,20 +218,39 @@ export const api = {
     login: (credentials: LoginApiRequest) =>
       post<LoginApiResponse>('/api/auth/login', credentials),
   },
+  me: {
+    get: () =>
+      get<UserApiResponse>('/api/me'),
+    update: (data: UpdateProfileApiRequest) =>
+      put<UserApiResponse>('/api/me', data),
+  },
+  companies: {
+    create: (data: CreateCompanyApiRequest) =>
+      post<CompanyApiResponse>('/api/companies', data),
+    listAll: () =>
+      get<CompanyApiResponse[]>('/api/companies'),
+  },
+  admins: {
+    create: (data: CreateAdminApiRequest) =>
+      post<UserApiResponse>('/api/admins', data),
+    listAll: () =>
+      get<UserApiResponse[]>('/api/admins'),
+    update: (id: number, data: UpdateAdminApiRequest) =>
+      put<UserApiResponse>(`/api/admins/${id}`, data),
+  },
+  companyUsers: {
+    create: (data: CreateCompanyUserApiRequest) =>
+      post<UserApiResponse>('/api/company-users', data),
+    listAll: () =>
+      get<UserApiResponse[]>('/api/company-users'),
+    deactivate: (id: number) =>
+      put<void>(`/api/company-users/${id}/deactivate`),
+    activate: (id: number) =>
+      put<UserApiResponse>(`/api/company-users/${id}/activate`),
+  },
   municipalities: {
-    listAll: async () => {
-      const irsaList = await get<IrsaApiResponse[]>('/api/irsa');
-      return onlyCdmxIrsa(irsaList).map((irsa) => ({
-        id: irsa.municipality.id,
-        municipalityName: irsa.municipality.municipalityName,
-        socialVulnerability: null,
-        currentIrsa: {
-          irsaValue: irsa.irsaValue,
-          riskLevel: irsa.riskLevel,
-          calculatedAt: irsa.calculatedAt,
-        },
-      }));
-    },
+    listAll: () =>
+      get<MunicipalityApiResponse[]>('/api/municipalities').then(onlyCdmxMunicipalities),
     getById: (id: number) =>
       get<MunicipalityApiResponse>(`/api/municipalities/${id}`),
   },
@@ -259,15 +309,50 @@ export const ALCALDIA_ID: Record<string, number> = {
 
 export const CDMX_MUNICIPALITY_IDS = new Set(Object.values(ALCALDIA_ID));
 
+const CDMX_MUNICIPALITY_NAMES = new Set([
+  'Alvaro Obregon',
+  'Azcapotzalco',
+  'Benito Juarez',
+  'Coyoacan',
+  'Cuajimalpa',
+  'Cuajimalpa de Morelos',
+  'Cuauhtemoc',
+  'Gustavo A. Madero',
+  'Iztacalco',
+  'Iztapalapa',
+  'La Magdalena Contreras',
+  'Magdalena Contreras',
+  'Miguel Hidalgo',
+  'Milpa Alta',
+  'Tlahuac',
+  'Tlalpan',
+  'Venustiano Carranza',
+  'Xochimilco',
+].map(normalizeMunicipalityName));
+
 export function getAlcaldiaId(nombreAlcaldia: string | null | undefined): number | null {
   if (!nombreAlcaldia) return null;
   return ALCALDIA_ID[nombreAlcaldia] ?? ALCALDIA_ID[withoutAccents(nombreAlcaldia)] ?? null;
 }
 
 function onlyCdmxIrsa(irsaList: IrsaApiResponse[]): IrsaApiResponse[] {
-  return irsaList.filter((irsa) => CDMX_MUNICIPALITY_IDS.has(irsa.municipality.id));
+  return irsaList.filter((irsa) =>
+    CDMX_MUNICIPALITY_IDS.has(irsa.municipality.id) ||
+    CDMX_MUNICIPALITY_NAMES.has(normalizeMunicipalityName(irsa.municipality.municipalityName))
+  );
+}
+
+function onlyCdmxMunicipalities(municipalities: MunicipalityApiResponse[]): MunicipalityApiResponse[] {
+  return municipalities.filter((municipality) =>
+    CDMX_MUNICIPALITY_IDS.has(municipality.id) ||
+    CDMX_MUNICIPALITY_NAMES.has(normalizeMunicipalityName(municipality.municipalityName))
+  );
 }
 
 function withoutAccents(value: string): string {
   return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+function normalizeMunicipalityName(value: string): string {
+  return withoutAccents(value).trim().replace(/\s+/g, ' ').toLowerCase();
 }

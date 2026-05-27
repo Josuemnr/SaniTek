@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-import { format, addDays } from 'date-fns';
 import { api } from '@/Services/backendApi';
-import { useRiskStore } from '@/store/useRiskStore';
 import {
   ZONAS_MOCK,
   type Zona,
@@ -14,6 +12,7 @@ const NOMBRE_NORMALIZADO: Record<string, string> = {
   'Coyoacan': 'Coyoacán',
   'Cuajimalpa': 'Cuajimalpa de Morelos',
   'Cuauhtemoc': 'Cuauhtémoc',
+  'Magdalena Contreras': 'La Magdalena Contreras',
   'Tlahuac': 'Tláhuac',
 };
 
@@ -51,27 +50,23 @@ export function useAlcaldias() {
   const [zonas, setZonas]     = useState<Zona[]>(ZONAS_MOCK);
   const [loading, setLoading] = useState(false);
 
-  const selectedDayOffset = useRiskStore((s) => s.selectedDayOffset);
-
   useEffect(() => {
     setLoading(true);
 
-    const fetchPromise = selectedDayOffset === 0
-      ? api.irsa.listLatest()
-      : api.irsa.daily(format(addDays(new Date(), selectedDayOffset), 'yyyy-MM-dd'));
-
-    fetchPromise
-      .then((irsaList) => {
-        const mappedZonas: Zona[] = irsaList.map((irsa) => {
-          const nombre = NOMBRE_NORMALIZADO[irsa.municipality.municipalityName]
-            ?? irsa.municipality.municipalityName;
-          const calidadAire = Math.round(irsa.irsaValue);
+    api.municipalities.listAll()
+      .then((municipalities) => {
+        const mappedZonas: Zona[] = municipalities
+          .filter((municipality) => municipality.currentIrsa)
+          .map((municipality) => {
+          const nombre = NOMBRE_NORMALIZADO[municipality.municipalityName]
+            ?? municipality.municipalityName;
+          const calidadAire = Math.round(municipality.currentIrsa?.irsaValue ?? 0);
 
           return {
-            id:        String(irsa.municipality.id),
+            id:        String(municipality.id),
             nombre,
             alcaldia:  nombre,
-            riskLevel: riskLevelToZona(irsa.riskLevel),
+            riskLevel: riskLevelToZona(municipality.currentIrsa?.riskLevel ?? ''),
             calidadAire,
             humedad:   HUMEDAD_TIPICA[nombre] ?? 60,
           };
@@ -84,7 +79,7 @@ export function useAlcaldias() {
         setZonas(ZONAS_MOCK);
       })
       .finally(() => setLoading(false));
-  }, [selectedDayOffset]);
+  }, []);
 
   return { zonas, loading };
 }

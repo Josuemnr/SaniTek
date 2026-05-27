@@ -20,9 +20,10 @@ export interface User {
 interface Props {
   user: User;
   onToggleStatus: (userId: number) => void;
+  isUpdating?: boolean;
 }
 
-export const UserRow: React.FC<Props> = ({ user, onToggleStatus }) => (
+export const UserRow: React.FC<Props> = ({ user, onToggleStatus, isUpdating = false }) => (
   <motion.tr
     layout
     initial={{ opacity: 0, y: 10 }}
@@ -51,18 +52,23 @@ export const UserRow: React.FC<Props> = ({ user, onToggleStatus }) => (
         >
           {user.status}
         </motion.span>
-        <div 
+        <button
+          type="button"
           onClick={() => onToggleStatus(user.id)}
+          disabled={isUpdating}
+          aria-label={user.status === 'Activo' ? 'Desactivar usuario' : 'Activar usuario'}
           style={{
             position: 'relative',
             width: 44,
             height: 22,
             backgroundColor: user.status === 'Activo' ? '#22c55e' : '#cbd5e1',
             borderRadius: 20,
-            cursor: 'pointer',
+            border: 'none',
+            cursor: isUpdating ? 'not-allowed' : 'pointer',
             padding: 2,
             transition: 'background-color 0.3s ease',
-            boxShadow: user.status === 'Activo' ? '0 0 12px rgba(34,197,94,0.3)' : 'none'
+            boxShadow: user.status === 'Activo' ? '0 0 12px rgba(34,197,94,0.3)' : 'none',
+            opacity: isUpdating ? 0.6 : 1,
           }}
         >
           <motion.div
@@ -76,7 +82,7 @@ export const UserRow: React.FC<Props> = ({ user, onToggleStatus }) => (
               boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
             }}
           />
-        </div>
+        </button>
       </div>
     </td>
     <td style={{ padding: '14px 24px' }}>

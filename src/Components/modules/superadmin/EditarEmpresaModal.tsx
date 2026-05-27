@@ -5,7 +5,7 @@ import type { Empresa } from './EmpresaRow';
 interface EditarEmpresaModalProps {
   empresa: Empresa;
   onClose: () => void;
-  onSave: (updated: Empresa) => void;
+  onSave: (updated: Empresa) => Promise<void> | void;
 }
 
 const inputStyle: React.CSSProperties = {
@@ -15,24 +15,35 @@ const inputStyle: React.CSSProperties = {
 };
 
 export function EditarEmpresaModal({ empresa, onClose, onSave }: EditarEmpresaModalProps) {
-  const [nombre,      setNombre]      = useState(empresa.nombre);
+  const [nombre]                     = useState(empresa.nombre);
   const [nombreAdmin, setNombreAdmin] = useState(empresa.nombreAdmin);
   const [correoAdmin, setCorreoAdmin] = useState(empresa.correoAdmin);
   const [errors,      setErrors]      = useState<Record<string, string>>({});
+  const [submitError, setSubmitError] = useState('');
+  const [isSaving,    setIsSaving]    = useState(false);
 
   const validate = () => {
     const e: Record<string, string> = {};
     if (!nombre.trim())      e.nombre      = 'Requerido';
     if (!nombreAdmin.trim()) e.nombreAdmin = 'Requerido';
-    if (!correoAdmin.trim() || !correoAdmin.includes('@')) e.correoAdmin = 'Correo inválido';
+    if (!correoAdmin.trim() || !correoAdmin.includes('@')) e.correoAdmin = 'Correo invalido';
     return e;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const e = validate();
     if (Object.keys(e).length > 0) { setErrors(e); return; }
-    onSave({ ...empresa, nombre: nombre.trim(), nombreAdmin: nombreAdmin.trim(), correoAdmin: correoAdmin.trim() });
-    onClose();
+    setIsSaving(true);
+    setSubmitError('');
+    try {
+      await onSave({ ...empresa, nombre: nombre.trim(), nombreAdmin: nombreAdmin.trim(), correoAdmin: correoAdmin.trim() });
+      onClose();
+    } catch (error) {
+      console.error('[EditarEmpresaModal] error al guardar administrador:', error);
+      setSubmitError(error instanceof Error ? error.message : 'No se pudieron guardar los cambios');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const field = (label: string, key: string, value: string, onChange: (v: string) => void, extra?: React.InputHTMLAttributes<HTMLInputElement>) => (
@@ -58,7 +69,11 @@ export function EditarEmpresaModal({ empresa, onClose, onSave }: EditarEmpresaMo
               <p style={{ margin: 0, fontSize: 11, color: '#6b7280' }}>{empresa.nombre}</p>
             </div>
           </div>
-          <button onClick={onClose} style={{ border: 'none', background: '#f3f4f6', borderRadius: 8, padding: 6, cursor: 'pointer', display: 'flex' }}>
+          <button
+            onClick={onClose}
+            disabled={isSaving}
+            style={{ border: 'none', background: '#f3f4f6', borderRadius: 8, padding: 6, cursor: isSaving ? 'not-allowed' : 'pointer', display: 'flex', opacity: isSaving ? 0.7 : 1 }}
+          >
             <X size={16} color="#6b7280" />
           </button>
         </div>
@@ -67,22 +82,25 @@ export function EditarEmpresaModal({ empresa, onClose, onSave }: EditarEmpresaMo
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <p style={{ margin: '4px 0 4px', fontSize: 11, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Administrador</p>
           {field('Nombre completo', 'nombreAdmin', nombreAdmin, setNombreAdmin)}
-          {field('Correo electrónico', 'correoAdmin', correoAdmin, setCorreoAdmin, { type: 'email' })}
+          {field('Correo electronico', 'correoAdmin', correoAdmin, setCorreoAdmin, { type: 'email' })}
+          {submitError && <p style={{ margin: 0, fontSize: 12, color: '#ef4444' }}>{submitError}</p>}
         </div>
 
         {/* Actions */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 28 }}>
           <button
             onClick={onClose}
-            style={{ padding: '10px 20px', borderRadius: 10, border: '1px solid #e5e7eb', background: 'white', color: '#374151', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
+            disabled={isSaving}
+            style={{ padding: '10px 20px', borderRadius: 10, border: '1px solid #e5e7eb', background: 'white', color: '#374151', fontSize: 13, fontWeight: 500, cursor: isSaving ? 'not-allowed' : 'pointer', opacity: isSaving ? 0.7 : 1 }}
           >
             Cancelar
           </button>
           <button
             onClick={handleSave}
-            style={{ padding: '10px 20px', borderRadius: 10, border: 'none', background: '#6fa8f7', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px rgba(99,162,247,0.4)' }}
+            disabled={isSaving}
+            style={{ padding: '10px 20px', borderRadius: 10, border: 'none', background: '#6fa8f7', color: 'white', fontSize: 13, fontWeight: 600, cursor: isSaving ? 'not-allowed' : 'pointer', boxShadow: '0 2px 8px rgba(99,162,247,0.4)', opacity: isSaving ? 0.8 : 1 }}
           >
-            Guardar cambios
+            {isSaving ? 'Guardando...' : 'Guardar cambios'}
           </button>
         </div>
       </div>

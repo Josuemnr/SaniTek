@@ -1,27 +1,9 @@
 import { Card, CardContent } from "@/Components/ui/card"
 import { Slider } from "@/Components/ui/slider"
 import { Badge } from "@/Components/ui/badge"
-import { Calendar, TrendingUp } from "lucide-react"
-import { useRiskStore } from "@/store/useRiskStore"
-import { format, addDays } from "date-fns"
-import { es } from "date-fns/locale"
-
-const DAYS_RANGE = 10
-
-function dayLabel(offset: number): string {
-  if (offset === 0)  return "Hoy"
-  if (offset === -1) return "Ayer"
-  if (offset === 1)  return "Mañana"
-  if (offset < 0)    return `Hace ${Math.abs(offset)} días`
-  return `En ${offset} días`
-}
+import { Calendar, Database } from "lucide-react"
 
 export function TemporalControl() {
-  const { selectedDayOffset, setSelectedDayOffset } = useRiskStore()
-
-  const selectedDate = addDays(new Date(), selectedDayOffset)
-  const isFuture     = selectedDayOffset > 0
-
   return (
     <Card className="w-full max-w-xl">
       <CardContent className="p-4 flex flex-col gap-3">
@@ -29,40 +11,32 @@ export function TemporalControl() {
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm font-semibold">Control Temporal</span>
-            {isFuture && (
-              <Badge variant="secondary" className="text-[10px] gap-1 px-1.5 py-0.5">
-                <TrendingUp className="h-3 w-3" />
-                Predicción
-              </Badge>
-            )}
+            <Badge variant="secondary" className="text-[10px] gap-1 px-1.5 py-0.5">
+              <Database className="h-3 w-3" />
+              Historico
+            </Badge>
           </div>
           <span className="text-xs text-muted-foreground font-mono">
-            {format(selectedDate, "dd MMM yyyy", { locale: es })}
+            Ultimo registro
           </span>
         </div>
 
         <Slider
-          value={[selectedDayOffset]}
-          onValueChange={(value) => {
-            const v = Array.isArray(value) ? value[0] : value
-            setSelectedDayOffset(v)
-          }}
-          min={-DAYS_RANGE}
-          max={DAYS_RANGE}
+          value={[0]}
+          min={0}
+          max={0}
           step={1}
           className="w-full"
+          disabled
         />
 
         <div className="flex justify-between text-[10px] text-muted-foreground uppercase font-bold px-1">
-          <span>-10d</span>
-          <span>-5d</span>
-          <span className="text-foreground">Hoy</span>
-          <span>+5d</span>
-          <span>+10d</span>
+          <span>Base historica</span>
+          <span className="text-foreground">Ultimo calculo disponible</span>
         </div>
 
         <p className="text-center text-xs text-muted-foreground -mt-1">
-          {dayLabel(selectedDayOffset)}
+          El mapa usa el ultimo IRSA guardado por alcaldia.
         </p>
       </CardContent>
     </Card>

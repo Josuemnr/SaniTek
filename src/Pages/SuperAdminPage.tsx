@@ -1,27 +1,87 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Plus, Building2 } from 'lucide-react';
 import { EmpresaRow } from '../Components/modules/superadmin/EmpresaRow';
 import type { Empresa } from '../Components/modules/superadmin/EmpresaRow';
-import { NuevaEmpresaModal } from '../Components/modules/superadmin/NuevaEmpresaModal';
+import { NuevaEmpresaModal, type NuevaEmpresaFormData } from '../Components/modules/superadmin/NuevaEmpresaModal';
 import { EditarEmpresaModal } from '../Components/modules/superadmin/EditarEmpresaModal';
-
-const INITIAL_EMPRESAS: Empresa[] = [
-  { id: 1, nombre: 'Grupo Industrial S.A.',    nombreAdmin: 'María García López',  correoAdmin: 'admin@grupoindustrial.com', suscrita: true  },
-  { id: 2, nombre: 'Logística Norte S.C.',      nombreAdmin: 'Carlos Ramos Pérez',  correoAdmin: 'admin@logisticanorte.com', suscrita: true  },
-  { id: 3, nombre: 'Distribuidora Alfa S.A.',   nombreAdmin: 'Ana Torres Medina',   correoAdmin: 'admin@distribalfa.com',     suscrita: false },
-];
+import { api, type CompanyApiResponse, type UserApiResponse } from '@/Services/backendApi';
+import { toast } from 'sonner';
 
 export function SuperAdminPage() {
-  const [empresas,      setEmpresas]      = useState<Empresa[]>(INITIAL_EMPRESAS);
+  const [empresas,      setEmpresas]      = useState<Empresa[]>([]);
+  const [loading,       setLoading]       = useState(false);
   const [showModal,     setShowModal]     = useState(false);
   const [editingEmpresa, setEditingEmpresa] = useState<Empresa | null>(null);
 
-  const handleEditEmpresa = (updated: Empresa) => {
-    setEmpresas(prev => prev.map(e => e.id === updated.id ? updated : e));
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadEmpresas = async () => {
+      setLoading(true);
+      try {
+        const [companies, admins] = await Promise.all([
+          api.companies.listAll(),
+          api.admins.listAll(),
+        ]);
+
+        if (!cancelled) {
+          setEmpresas(mapEmpresas(companies, admins));
+        }
+      } catch (error) {
+        console.error('[SuperAdminPage] error al listar empresas:', error);
+        toast.error('No se pudieron cargar las empresas');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    void loadEmpresas();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleEditEmpresa = async (updated: Empresa) => {
+    if (!updated.adminId) {
+      throw new Error('Esta empresa no tiene administrador asignado.');
+    }
+
+    const admin = await api.admins.update(updated.adminId, {
+      names: updated.nombreAdmin,
+      email: updated.correoAdmin,
+    });
+
+    setEmpresas(prev => prev.map(e => e.id === updated.id ? {
+      ...e,
+      nombreAdmin: admin.names ?? updated.nombreAdmin,
+      correoAdmin: admin.email,
+      adminId: admin.id,
+    } : e));
+    toast.success('Administrador actualizado');
   };
 
-  const handleAddEmpresa = (data: Omit<Empresa, 'id' | 'suscrita'>) => {
-    setEmpresas(prev => [{ id: Date.now(), ...data, suscrita: false }, ...prev]);
+  const handleAddEmpresa = async (data: NuevaEmpresaFormData) => {
+    const company = await api.companies.create({
+      companyName: data.nombre,
+    });
+
+    const admin = await api.admins.create({
+      companyId: company.id,
+      names: data.nombreAdmin,
+      email: data.correoAdmin,
+      password: data.password,
+    });
+
+    setEmpresas(prev => [{
+      id: company.id,
+      adminId: admin.id,
+      nombre: company.companyName,
+      nombreAdmin: admin.names ?? data.nombreAdmin,
+      correoAdmin: admin.email,
+      suscrita: false,
+    }, ...prev]);
+    toast.success('Empresa y administrador creados');
   };
 
   const suscritas   = empresas.filter(e => e.suscrita).length;
@@ -87,7 +147,7 @@ export function SuperAdminPage() {
               : (
                 <tr>
                   <td colSpan={4} style={{ padding: '48px 24px', textAlign: 'center', color: '#9ca3af', fontSize: 14 }}>
-                    No hay empresas registradas aún.
+                    {loading ? 'Cargando empresas...' : 'No hay empresas registradas aún.'}
                   </td>
                 </tr>
               )
@@ -108,4 +168,19 @@ export function SuperAdminPage() {
       )}
     </div>
   );
+}
+
+function mapEmpresas(companies: CompanyApiResponse[], admins: UserApiResponse[]): Empresa[] {
+  return companies.map((company) => {
+    const admin = admins.find((user) => user.company?.id === company.id);
+
+    return {
+      id: company.id,
+      adminId: admin?.id ?? null,
+      nombre: company.companyName,
+      nombreAdmin: admin?.names ?? 'Sin administrador',
+      correoAdmin: admin?.email ?? 'Sin correo',
+      suscrita: company.isActive,
+    };
+  });
 }

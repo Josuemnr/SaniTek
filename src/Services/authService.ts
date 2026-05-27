@@ -1,4 +1,6 @@
 import { api, type LoginApiResponse, type UserApiResponse } from './backendApi';
+import { auth } from './firebase';
+import { signInWithEmailAndPassword, updatePassword } from 'firebase/auth';
 
 const TOKEN_KEY = 'token';
 const REFRESH_TOKEN_KEY = 'refreshToken';
@@ -27,6 +29,25 @@ export const loginUser = async (email: string, password: string): Promise<string
   return session.token;
 };
 
+export async function changeCurrentUserPassword(
+  email: string,
+  currentPassword: string,
+  newPassword: string
+) {
+  const credential = await signInWithEmailAndPassword(auth, email, currentPassword);
+  await updatePassword(credential.user, newPassword);
+
+  const session = getStoredAuthSession();
+  if (session) {
+    saveAuthSession({
+      ...session,
+      token: await credential.user.getIdToken(true),
+      refreshToken: credential.user.refreshToken,
+    });
+    window.dispatchEvent(new Event('auth-session-changed'));
+  }
+}
+
 export function getStoredAuthSession(): AuthSession | null {
   const token = localStorage.getItem(TOKEN_KEY);
   const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
@@ -54,6 +75,17 @@ export function clearAuthSession() {
   window.dispatchEvent(new Event('auth-session-changed'));
 }
 
+export function updateStoredAuthUser(user: UserApiResponse) {
+  const session = getStoredAuthSession();
+  if (!session) return;
+
+  saveAuthSession({
+    ...session,
+    user: toAuthSessionUser(user),
+  });
+  window.dispatchEvent(new Event('auth-session-changed'));
+}
+
 function saveAuthSession(session: AuthSession) {
   localStorage.setItem(TOKEN_KEY, session.token);
   localStorage.setItem(REFRESH_TOKEN_KEY, session.refreshToken);
@@ -65,13 +97,17 @@ function toAuthSession(response: LoginApiResponse): AuthSession {
     token: response.idToken,
     refreshToken: response.refreshToken,
     expiresIn: response.expiresIn,
-    user: {
-      id: response.user.id,
-      uid: response.user.firebaseUid,
-      email: response.user.email,
-      displayName: response.user.names,
-      role: response.user.role?.roleName ?? null,
-      backendUser: response.user,
-    },
+    user: toAuthSessionUser(response.user),
+  };
+}
+
+function toAuthSessionUser(user: UserApiResponse): AuthSessionUser {
+  return {
+    id: user.id,
+    uid: user.firebaseUid,
+    email: user.email,
+    displayName: user.names,
+    role: user.role?.roleName ?? null,
+    backendUser: user,
   };
 }

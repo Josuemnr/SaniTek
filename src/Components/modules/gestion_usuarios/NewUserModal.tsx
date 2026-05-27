@@ -1,14 +1,17 @@
 import { useState } from 'react';
 import { X, ShieldCheck, Eye, EyeOff } from 'lucide-react';
-import type { User } from './UserRow';
 import { usePasswordStrength, STRENGTH_CONFIG } from '@/hooks/usePasswordStrength';
 
 interface Props {
   onClose: () => void;
-  onSave: (user: Omit<User, 'id'>) => void;
+  onSave: (user: NewUserFormData) => Promise<void> | void;
 }
 
-const AVATAR_COLORS = ['#ef4444', '#f97316', '#ec4899', '#6366f1', '#10b981', '#3b82f6', '#8b5cf6'];
+export interface NewUserFormData {
+  name: string;
+  email: string;
+  password: string;
+}
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
@@ -28,6 +31,8 @@ export const NewUserModal: React.FC<Props> = ({ onClose, onSave }) => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
+  const [submitError, setSubmitError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   const { results, level, isValid } = usePasswordStrength(password);
   const strength = STRENGTH_CONFIG[level];
@@ -36,37 +41,42 @@ export const NewUserModal: React.FC<Props> = ({ onClose, onSave }) => {
     const e: { name?: string; email?: string } = {};
     if (!name.trim()) e.name = 'El nombre es requerido';
     if (!email.trim()) e.email = 'El correo es requerido';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = 'Correo inválido';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = 'Correo invalido';
     return e;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const e = validate();
-    if (Object.keys(e).length > 0 || !isValid) { 
-      setErrors(e); 
-      return; 
+    if (Object.keys(e).length > 0 || !isValid) {
+      setErrors(e);
+      return;
     }
 
-    const now = new Date();
-    const dateStr = now.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })
-      + ', ' + now.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
-
-    onSave({
-      name: name.trim(),
-      email: email.trim(),
-      role: 'Usuario', // Rol por defecto según requerimiento
-      status: 'Activo',
-      lastAccessLabel: 'Recién creado',
-      lastAccessDate: dateStr,
-      avatarColor: AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)],
-    });
-    onClose();
+    setIsSaving(true);
+    setSubmitError('');
+    try {
+      await onSave({
+        name: name.trim(),
+        email: email.trim(),
+        password,
+      });
+      onClose();
+    } catch (error) {
+      console.error('[NewUserModal] error al crear usuario:', error);
+      setSubmitError(error instanceof Error ? error.message : 'No se pudo crear el usuario');
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  const canSubmit = isValid && Boolean(name.trim()) && Boolean(email.trim()) && !isSaving;
 
   return (
     <div
       style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}
-      onClick={onClose}
+      onClick={() => {
+        if (!isSaving) onClose();
+      }}
     >
       <div
         style={{ background: 'white', borderRadius: 16, padding: 28, width: 440, boxShadow: '0 20px 60px rgba(0,0,0,0.18)', display: 'flex', flexDirection: 'column', gap: 20 }}
@@ -80,19 +90,22 @@ export const NewUserModal: React.FC<Props> = ({ onClose, onSave }) => {
             </div>
             <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#111827' }}>Crear Nuevo Usuario</h2>
           </div>
-          <button onClick={onClose} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#6b7280', display: 'flex' }}>
+          <button
+            onClick={onClose}
+            disabled={isSaving}
+            style={{ border: 'none', background: 'none', cursor: isSaving ? 'not-allowed' : 'pointer', color: '#6b7280', display: 'flex', opacity: isSaving ? 0.7 : 1 }}
+          >
             <X size={18} />
           </button>
         </div>
 
         {/* Fields */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-
           <div>
             <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#6b7280', marginBottom: 6 }}>Nombre completo</label>
             <input
               type="text"
-              placeholder="Ej. Juan Pérez García"
+              placeholder="Ej. Juan Perez Garcia"
               value={name}
               onChange={e => { setName(e.target.value); setErrors(p => ({ ...p, name: undefined })); }}
               style={{ ...inputStyle, borderColor: errors.name ? '#ef4444' : '#e5e7eb' }}
@@ -101,7 +114,7 @@ export const NewUserModal: React.FC<Props> = ({ onClose, onSave }) => {
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#6b7280', marginBottom: 6 }}>Correo electrónico</label>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#6b7280', marginBottom: 6 }}>Correo electronico</label>
             <input
               type="email"
               placeholder="usuario@empresa.com"
@@ -113,16 +126,16 @@ export const NewUserModal: React.FC<Props> = ({ onClose, onSave }) => {
           </div>
 
           <div style={{ position: 'relative' }}>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#6b7280', marginBottom: 6 }}>Contraseña temporal</label>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#6b7280', marginBottom: 6 }}>Contrasena temporal</label>
             <div style={{ position: 'relative' }}>
               <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Mín. 8 caracteres"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Min. 8 caracteres"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 style={{ ...inputStyle, paddingRight: 40 }}
               />
-              <button 
+              <button
                 onClick={() => setShowPassword(!showPassword)}
                 style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', border: 'none', background: 'none', cursor: 'pointer', color: '#9ca3af' }}
               >
@@ -130,11 +143,10 @@ export const NewUserModal: React.FC<Props> = ({ onClose, onSave }) => {
               </button>
             </div>
 
-            {/* Password Strength UI */}
             {password.length > 0 && (
               <div style={{ marginTop: 10 }}>
                 <div style={{ display: 'flex', gap: 4, height: 4, marginBottom: 6 }}>
-                  {[1,2,3,4,5].map((s) => (
+                  {[1, 2, 3, 4, 5].map((s) => (
                     <div key={s} style={{ flex: 1, borderRadius: 2, background: s <= strength.segments ? strength.color : '#f3f4f6', transition: '0.3s' }} />
                   ))}
                 </div>
@@ -150,35 +162,36 @@ export const NewUserModal: React.FC<Props> = ({ onClose, onSave }) => {
             )}
           </div>
 
+          {submitError && <p style={{ margin: 0, fontSize: 12, color: '#ef4444' }}>{submitError}</p>}
         </div>
 
         {/* Buttons */}
         <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 10 }}>
           <button
             onClick={onClose}
-            style={{ padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 500, border: '1px solid #e5e7eb', background: 'white', color: '#374151', cursor: 'pointer' }}
+            disabled={isSaving}
+            style={{ padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 500, border: '1px solid #e5e7eb', background: 'white', color: '#374151', cursor: isSaving ? 'not-allowed' : 'pointer', opacity: isSaving ? 0.7 : 1 }}
           >
             Cancelar
           </button>
           <button
             onClick={handleSave}
-            disabled={!isValid || !name || !email}
-            style={{ 
-              padding: '10px 24px', 
-              borderRadius: 10, 
-              fontSize: 13, 
-              fontWeight: 600, 
-              border: 'none', 
-              background: isValid && name && email ? '#3b82f6' : '#cbd5e1', 
-              color: 'white', 
-              cursor: isValid && name && email ? 'pointer' : 'not-allowed',
-              transition: '0.3s'
+            disabled={!canSubmit}
+            style={{
+              padding: '10px 24px',
+              borderRadius: 10,
+              fontSize: 13,
+              fontWeight: 600,
+              border: 'none',
+              background: canSubmit ? '#3b82f6' : '#cbd5e1',
+              color: 'white',
+              cursor: canSubmit ? 'pointer' : 'not-allowed',
+              transition: '0.3s',
             }}
           >
-            Crear Usuario
+            {isSaving ? 'Creando...' : 'Crear Usuario'}
           </button>
         </div>
-
       </div>
     </div>
   );

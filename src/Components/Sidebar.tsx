@@ -25,7 +25,7 @@ const ADMIN_ITEMS: NavItem[] = [
 export const Sidebar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, role } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -33,6 +33,12 @@ export const Sidebar: React.FC = () => {
     await logout();
     navigate('/login', { replace: true });
   };
+
+  const filteredAdminItems = ADMIN_ITEMS.filter((item) => {
+    if (item.path === '/Gestion_Usuarios') return role === 'ADMIN';
+    if (item.path === '/superadmin') return role === 'SUPER_ADMIN';
+    return true;
+  });
 
   const itemStyle = (active: boolean): React.CSSProperties => ({
     display: 'flex',
@@ -94,7 +100,7 @@ export const Sidebar: React.FC = () => {
           Administración
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {ADMIN_ITEMS.map(item => (
+          {filteredAdminItems.map(item => (
             <button key={item.path} onClick={() => navigate(item.path)} style={itemStyle(isActive(item.path))}>
               <span style={{ color: isActive(item.path) ? '#1d4ed8' : '#6b7280', flexShrink: 0 }}>{item.icon}</span>
               {item.label}

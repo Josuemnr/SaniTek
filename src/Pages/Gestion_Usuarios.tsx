@@ -1,36 +1,56 @@
-import { useState } from 'react';
-import { Search, CheckCircle, XCircle, Shield, Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Search, CheckCircle, XCircle, Plus } from 'lucide-react';
 import { FilterTab } from '../Components/modules/gestion_usuarios/FilterTab';
 import { UserRow } from '../Components/modules/gestion_usuarios/UserRow';
 import type { User } from '../Components/modules/gestion_usuarios/UserRow';
 import { PaginationBar } from '../Components/modules/gestion_usuarios/PaginationBar';
-import { NewUserModal } from '../Components/modules/gestion_usuarios/NewUserModal';
+import { NewUserModal, type NewUserFormData } from '../Components/modules/gestion_usuarios/NewUserModal';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
+import { api, type UserApiResponse } from '@/Services/backendApi';
+import type { UserRole } from '@/Services/backendApi';
 
-type FilterType = 'Activos' | 'Inactivos' | 'Administradores';
-
-const INITIAL_USERS: User[] = [
-  { id: 1, name: 'Josué Monroy Larios',    email: 'Josue@sanitek.com',       role: 'Administrador', status: 'Activo',   lastAccessLabel: 'Hace 2 horas',  lastAccessDate: '17 Marzo 2026, 14:30', avatarColor: '#ef4444' },
-  { id: 2, name: 'Paula Concepcion Herrera',     email: 'paula.concepcion@sanitek.com',    role: 'Gerente',       status: 'Activo',   lastAccessLabel: 'Hace 5 horas',  lastAccessDate: '15 Marzo 2026, 11:15', avatarColor: '#f97316' },
-  { id: 3, name: 'Iker Mejía Hernandez',  email: 'iker.mejia@sanitek.com',   role: 'Director',      status: 'Activo',   lastAccessLabel: 'Hace 1 día',    lastAccessDate: '14 Marzo 2026, 16:45', avatarColor: '#ec4899' },
-  { id: 4, name: 'Gerado García Landa', email: 'gerardo.garcia@sanitek.com',role: 'Gerente',       status: 'Activo', lastAccessLabel: 'Hace 15 días',  lastAccessDate: '2 Marzo 2026, 09:20', avatarColor: '#6366f1' },
-  { id: 5, name: 'Wolfgang Von Goethe',     email: 'william.goethe@sanitek.com',   role: 'Director',      status: 'Inactivo',   lastAccessLabel: 'Hace 3 días',   lastAccessDate: '14 Marzo 2026, 13:10', avatarColor: '#dc2626' },
-];
+type FilterType = 'Activos' | 'Inactivos';
 
 const ITEMS_PER_PAGE = 5;
+const AVATAR_COLORS = ['#ef4444', '#f97316', '#ec4899', '#6366f1', '#10b981', '#3b82f6', '#8b5cf6'];
 
 export default function GestionUsuarios() {
-  const [users, setUsers] = useState<User[]>(INITIAL_USERS);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterType>('Activos');
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
+  const [updatingUserIds, setUpdatingUserIds] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadUsers = async () => {
+      setLoading(true);
+      try {
+        const response = await api.companyUsers.listAll();
+        if (!cancelled) setUsers(response.map(mapUser));
+      } catch (error) {
+        console.error('[GestionUsuarios] error al listar usuarios:', error);
+        toast.error('No se pudieron cargar los usuarios');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    void loadUsers();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filtered = users.filter(u => {
     const matchesFilter =
       activeFilter === 'Activos'         ? u.status === 'Activo' :
-      activeFilter === 'Inactivos'       ? u.status === 'Inactivo' :
-      u.role === 'Administrador';
+      u.status === 'Inactivo';
     const matchesSearch =
       !search ||
       u.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -41,20 +61,45 @@ export default function GestionUsuarios() {
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
-  const handleAddUser = (data: Omit<User, 'id'>) => {
-    const newUser: User = { id: Date.now(), ...data };
-    setUsers(prev => [newUser, ...prev]);
+  const handleAddUser = async (data: NewUserFormData) => {
+    const created = await api.companyUsers.create({
+      names: data.name,
+      email: data.email,
+      password: data.password,
+    });
+
+    setUsers(prev => [mapUser(created), ...prev]);
     setActiveFilter('Activos');
     setCurrentPage(1);
+    toast.success('Usuario creado');
   };
 
-  const handleToggleStatus = (userId: number) => {
-    setUsers(prev => prev.map(u => {
-      if (u.id === userId) {
-        return { ...u, status: u.status === 'Activo' ? 'Inactivo' : 'Activo' };
+  const handleToggleStatus = async (userId: number) => {
+    const user = users.find(u => u.id === userId);
+    if (!user) return;
+    if (updatingUserIds.has(userId)) return;
+
+    setUpdatingUserIds(prev => new Set(prev).add(userId));
+    try {
+      if (user.status === 'Activo') {
+        await api.companyUsers.deactivate(userId);
+        setUsers(prev => prev.map(u => u.id === userId ? { ...u, status: 'Inactivo' } : u));
+        toast.success('Usuario desactivado');
+      } else {
+        const activated = await api.companyUsers.activate(userId);
+        setUsers(prev => prev.map(u => u.id === userId ? mapUser(activated) : u));
+        toast.success('Usuario activado');
       }
-      return u;
-    }));
+    } catch (error) {
+      console.error('[GestionUsuarios] error al cambiar estatus:', error);
+      toast.error('No se pudo cambiar el estatus');
+    } finally {
+      setUpdatingUserIds(prev => {
+        const next = new Set(prev);
+        next.delete(userId);
+        return next;
+      });
+    }
   };
 
   const handleFilterChange = (f: FilterType) => {
@@ -92,19 +137,16 @@ export default function GestionUsuarios() {
         <div style={{ display: 'flex', gap: 8 }}>
           <FilterTab label="Activos"         icon={<CheckCircle size={14} />} active={activeFilter === 'Activos'}         onClick={() => handleFilterChange('Activos')} />
           <FilterTab label="Inactivos"       icon={<XCircle size={14} />}     active={activeFilter === 'Inactivos'}       onClick={() => handleFilterChange('Inactivos')} />
-          <FilterTab label="Administradores" icon={<Shield size={14} />}      active={activeFilter === 'Administradores'} onClick={() => handleFilterChange('Administradores')} />
         </div>
       </div>
 
       {/* Content */}
       <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-
-        {/* Table card */}
         <div style={{ flex: 1, background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', boxShadow: '0 1px 8px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid #f3f4f6' }}>
-                {['Usuario', 'Rol', 'Estatus', 'Último Acceso'].map(col => (
+                {['Usuario', 'Rol', 'Estatus', 'Ultimo Acceso'].map(col => (
                   <th key={col} style={{ padding: '14px 24px', textAlign: 'left', fontSize: 11, fontWeight: 500, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     {col}
                   </th>
@@ -114,7 +156,14 @@ export default function GestionUsuarios() {
             <tbody>
               <AnimatePresence mode="popLayout">
                 {paginated.length > 0
-                  ? paginated.map(user => <UserRow key={user.id} user={user} onToggleStatus={handleToggleStatus} />)
+                  ? paginated.map(user => (
+                    <UserRow
+                      key={user.id}
+                      user={user}
+                      onToggleStatus={handleToggleStatus}
+                      isUpdating={updatingUserIds.has(user.id)}
+                    />
+                  ))
                   : (
                     <motion.tr
                       initial={{ opacity: 0 }}
@@ -122,7 +171,7 @@ export default function GestionUsuarios() {
                       key="empty"
                     >
                       <td colSpan={4} style={{ padding: '40px 24px', textAlign: 'center', color: '#9ca3af', fontSize: 14 }}>
-                        No se encontraron usuarios.
+                        {loading ? 'Cargando usuarios...' : 'No se encontraron usuarios.'}
                       </td>
                     </motion.tr>
                   )
@@ -140,10 +189,31 @@ export default function GestionUsuarios() {
         </div>
       </div>
 
-      {/* Modal */}
       {showModal && (
         <NewUserModal onClose={() => setShowModal(false)} onSave={handleAddUser} />
       )}
     </div>
   );
+}
+
+function mapUser(user: UserApiResponse): User {
+  return {
+    id: user.id,
+    name: user.names ?? user.email,
+    email: user.email,
+    role: mapRole(user.role?.roleName),
+    status: user.isActive ? 'Activo' : 'Inactivo',
+    lastAccessLabel: 'Sin acceso registrado',
+    lastAccessDate: '-',
+    avatarColor: avatarColorFor(user.id),
+  };
+}
+
+function mapRole(roleName: UserRole | undefined) {
+  if (roleName === 'ADMIN') return 'Administrador';
+  return 'Usuario';
+}
+
+function avatarColorFor(id: number) {
+  return AVATAR_COLORS[id % AVATAR_COLORS.length];
 }

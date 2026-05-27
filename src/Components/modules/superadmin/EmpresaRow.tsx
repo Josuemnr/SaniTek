@@ -2,6 +2,7 @@ import { Building2, Pencil } from 'lucide-react';
 
 export interface Empresa {
   id: number;
+  adminId?: number | null;
   nombre: string;
   correoAdmin: string;
   nombreAdmin: string;

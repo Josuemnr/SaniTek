@@ -28,7 +28,7 @@ export const PasswordInput: React.FC<Props> = ({
   const { results, level } = usePasswordStrength(value);
   const cfg = STRENGTH_CONFIG[level];
 
-  const showMeter = showStrength && value.length > 0;
+  const showMeter = showStrength;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -83,7 +83,7 @@ export const PasswordInput: React.FC<Props> = ({
       )}
 
       {/* ── Medidor de fortaleza ──────────────────────── */}
-      {showStrength && value.length > 0 && (
+      {showStrength && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
 
           {/* Barra de segmentos */}

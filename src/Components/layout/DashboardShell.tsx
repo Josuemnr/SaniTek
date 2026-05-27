@@ -78,8 +78,11 @@ export function DashboardShell() {
   const pageTitle = activeLink?.pageTitle ?? screenConfig?.pageTitle ?? "";
   const subtitle  = activeLink?.subtitle  ?? screenConfig?.subtitle;
 
-  // BYPASS: Mostrar todos los links en desarrollo ignorando roles
-  const filteredAdminLinks = ADMIN_LINKS;
+  const filteredAdminLinks = ADMIN_LINKS.filter((item) => {
+    if (item.href === '/Gestion_Usuarios') return role === 'ADMIN';
+    if (item.href === '/superadmin') return role === 'SUPER_ADMIN';
+    return true;
+  });
   const userName = user?.displayName || user?.email || 'Usuario SaniTek';
   const userRole = roleLabel(role);
   const userInitials = getInitials(userName);
