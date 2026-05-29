@@ -12,11 +12,12 @@ export const CustomImput = ({ label, placeholder, type = "text", value, onChange
   const id = useId();
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-      <label htmlFor={id} style={{ marginBottom: '6px', fontSize: '0.85rem', fontWeight: 600, color: '#cbd5e0' }}>
+      <label htmlFor={id} data-testid="custom-input-label" style={{ marginBottom: '6px', fontSize: '0.85rem', fontWeight: 600, color: '#cbd5e0' }}>
         {label}
       </label>
       <input
         id={id}
+        data-testid="custom-input"
         type={type}
         placeholder={placeholder}
         value={value}

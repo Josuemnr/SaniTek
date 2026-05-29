@@ -21,17 +21,26 @@ export const PaginationBar: React.FC<Props> = ({ current, totalPages, totalItems
   };
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 24px', borderTop: '1px solid #f3f4f6' }}>
-      <p style={{ margin: 0, fontSize: 13, color: '#6b7280' }}>
+    <div
+      data-testid="pagination-bar"
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 24px', borderTop: '1px solid #f3f4f6' }}
+    >
+      <p data-testid="pagination-info" style={{ margin: 0, fontSize: 13, color: '#6b7280' }}>
         Mostrando {from}-{to} de {totalItems} usuarios
       </p>
       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-        <button onClick={() => onPageChange(current - 1)} disabled={current === 1} style={{ ...btnBase, opacity: current === 1 ? 0.4 : 1 }}>
+        <button
+          data-testid="btn-prev"
+          onClick={() => onPageChange(current - 1)}
+          disabled={current === 1}
+          style={{ ...btnBase, opacity: current === 1 ? 0.4 : 1 }}
+        >
           <ChevronLeft size={16} />
         </button>
         {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
           <button
             key={page}
+            data-testid={`btn-page-${page}`}
             onClick={() => onPageChange(page)}
             style={{
               width: 32, height: 32, borderRadius: 8,
@@ -45,7 +54,12 @@ export const PaginationBar: React.FC<Props> = ({ current, totalPages, totalItems
             {page}
           </button>
         ))}
-        <button onClick={() => onPageChange(current + 1)} disabled={current === totalPages} style={{ ...btnBase, opacity: current === totalPages ? 0.4 : 1 }}>
+        <button
+          data-testid="btn-next"
+          onClick={() => onPageChange(current + 1)}
+          disabled={current === totalPages}
+          style={{ ...btnBase, opacity: current === totalPages ? 0.4 : 1 }}
+        >
           <ChevronRight size={16} />
         </button>
       </div>

@@ -18,6 +18,7 @@ export const RoleBadge: React.FC<Props> = ({ role }) => {
   const { bg, color, icon } = config[role];
   return (
     <span
+      data-testid="role-badge"
       style={{
         display: 'inline-flex',
         alignItems: 'center',

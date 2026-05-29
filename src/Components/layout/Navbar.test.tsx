@@ -9,12 +9,13 @@ describe('Navbar Component', () => {
     expect(logo).toBeInTheDocument();
   });
 
-  it('renders navigation links: Mapa, Historial, Hoy NO circula, administración (NAV-02)', () => {
+  it('renders navigation links: Mapa, Historial, Hoy no Circula, Alertas (NAV-02)', () => {
     render(<Navbar />);
-    expect(screen.getByText(/mapa/i)).toBeInTheDocument();
-    expect(screen.getByText(/historial/i)).toBeInTheDocument();
+    // Links actuales definidos en src/lib/nav-constants.ts
+    expect(screen.getByText(/mapa de riesgo/i)).toBeInTheDocument();
+    expect(screen.getByText(/historial de riesgos/i)).toBeInTheDocument();
     expect(screen.getByText(/hoy no circula/i)).toBeInTheDocument();
-    expect(screen.getByText(/administración/i)).toBeInTheDocument();
+    expect(screen.getByText(/alertas sanitarias/i)).toBeInTheDocument();
   });
 
   it('renders search input and allows typing (NAV-03)', () => {

@@ -12,9 +12,23 @@ export default defineConfig({
     }
   },
   test: {
+    // ── Cobertura de código ────────────────────────────────────────────────
+    // Ejecutar con: npx vitest run --coverage
+    // El reporte HTML queda en ./coverage/index.html
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],   // tabla en terminal + HTML navegable
+      include: ['src/Components/**/*.tsx'],
+      exclude: [
+        'src/Components/**/*.stories.tsx', // excluir stories de Storybook
+        'src/Components/**/*.test.tsx',    // excluir los propios tests
+        'src/Components/ui/**',            // excluir componentes de shadcn/ui generados
+      ],
+    },
     workspace: [{
       extends: true,
       test: {
+        name: 'unit',   // ← nombre para poder filtrarlo con --project unit
         globals: true,
         environment: 'jsdom',
         setupFiles: ['./src/vitest-setup.ts']

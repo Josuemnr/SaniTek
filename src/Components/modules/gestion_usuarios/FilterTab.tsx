@@ -9,6 +9,7 @@ interface Props {
 
 export const FilterTab: React.FC<Props> = ({ label, icon, active = false, onClick }) => (
   <button
+    data-testid="filter-tab"
     onClick={onClick}
     style={{
       display: 'inline-flex',

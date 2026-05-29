@@ -30,6 +30,7 @@ export function AlertaItem({ alerta, onMarkRead }: AlertaItemProps) {
 
   return (
     <div
+      data-testid="alerta-item"
       className={cn(
         "flex gap-3 px-4 py-3.5 border-b border-gray-100 last:border-0 transition-colors",
         !alerta.leida ? nivel.bgLight : "bg-white hover:bg-gray-50/60"
@@ -54,6 +55,7 @@ export function AlertaItem({ alerta, onMarkRead }: AlertaItemProps) {
             <div className="flex items-center gap-1.5 flex-wrap">
               {/* Badge de nivel */}
               <span
+                data-testid="nivel-badge"
                 className={cn(
                   "inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5",
                   nivel.bgLight,
@@ -64,23 +66,24 @@ export function AlertaItem({ alerta, onMarkRead }: AlertaItemProps) {
                 {nivel.label}
               </span>
               {/* Tipo */}
-              <span className="text-[10px] text-gray-400 font-medium">{tipo.label}</span>
+              <span data-testid="tipo-label" className="text-[10px] text-gray-400 font-medium">{tipo.label}</span>
             </div>
-            <p className="text-sm font-semibold text-gray-900 mt-0.5 leading-snug">
+            <p data-testid="alerta-titulo" className="text-sm font-semibold text-gray-900 mt-0.5 leading-snug">
               {alerta.titulo}
             </p>
-            <p className="text-xs text-gray-400 font-medium mt-0.5">
+            <p data-testid="alerta-alcaldia" className="text-xs text-gray-400 font-medium mt-0.5">
               {alerta.alcaldianombre}
             </p>
           </div>
 
           {/* Timestamp + indicador no leído */}
           <div className="flex flex-col items-end gap-1 flex-shrink-0">
-            <span className="text-[10px] text-gray-400 whitespace-nowrap">
+            <span data-testid="alerta-timestamp" className="text-[10px] text-gray-400 whitespace-nowrap">
               {formatTimestamp(alerta.timestamp)}
             </span>
             {!alerta.leida && onMarkRead && (
               <button
+                data-testid="mark-read-btn"
                 onClick={() => onMarkRead(alerta.id)}
                 className="flex items-center gap-1 text-[10px] text-primary hover:text-primary/80 transition-colors"
               >
@@ -92,7 +95,7 @@ export function AlertaItem({ alerta, onMarkRead }: AlertaItemProps) {
         </div>
 
         {/* Descripción */}
-        <p className="text-xs text-gray-500 mt-1.5 leading-relaxed line-clamp-2">
+        <p data-testid="alerta-descripcion" className="text-xs text-gray-500 mt-1.5 leading-relaxed line-clamp-2">
           {alerta.descripcion}
         </p>
       </div>
