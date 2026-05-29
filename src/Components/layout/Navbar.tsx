@@ -4,7 +4,7 @@ import { Input } from '@/Components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/Components/ui/dropdown-menu';
 import { Search, Bell } from 'lucide-react';
-import logo from '@/assets/logo.png';
+import logo from '@/assets/logoAlt.svg';
 import { cn } from '@/lib/utils';
 import { NAV_LINKS } from '@/lib/nav-constants';
 
@@ -15,7 +15,7 @@ export function Navbar() {
         <div className="flex items-center gap-8">
           {/* Logo (NAV-01) */}
           <div className="flex items-center gap-2">
-            <img src={logo} alt="SaniTek Logo" className="h-8 w-auto object-contain" />
+            <img src={logo} alt="SaniTek Logo" className="h-10 w-auto object-contain" />
           </div>
 
           {/* Navigation Links (NAV-02) */}

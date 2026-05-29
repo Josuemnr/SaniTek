@@ -8,6 +8,8 @@ import { PrimaryButton } from '../Components/modules/login/PrimaryButton';
 import { PantallaCarga } from '../Components/modules/login/Pantalla_Carga';
 import { useAuth } from '../Context/AuthContext';
 
+import logo from '../assets/logoAlt.png';
+
 export default function Login() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -77,6 +79,9 @@ export default function Login() {
         >
           {/* Encabezado */}
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+              <img src={logo} alt="SaniTek Logo" style={{ height: '60px', width: 'auto' }} />
+            </div>
             <h1 style={{ color: 'white', fontSize: '2rem', fontWeight: 700, margin: 0 }}>Inicia Sesión</h1>
             <p style={{ color: '#a0aec0', fontSize: '0.95rem', marginTop: '8px' }}>Bienvenido de vuelta!</p>
           </div>
