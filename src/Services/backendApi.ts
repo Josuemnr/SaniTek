@@ -1,8 +1,5 @@
-// En desarrollo, Vite proxea /api → http://localhost:8080 (sin CORS)
-// En producción, apuntar VITE_API_BASE_URL al backend real
 const BASE = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
 
-// ─── DTOs del backend (nuevo — feature-inglish) ───────────────────────────────
 
 export interface MunicipalitySummary {
   id: number;
