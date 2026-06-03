@@ -1,7 +1,7 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { LogOut, CreditCard, UserCog, ShieldCheck, Users, ChevronUp } from "lucide-react";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import logo from '@/assets/logo.png';
 import { NAV_LINKS, SCREEN_CONFIGS } from '@/lib/nav-constants';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';

@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import type { GeoJsonObject, Feature } from "geojson";
 import type { PathOptions, GeoJSON as LeafletGeoJSON } from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { Loader2 } from "lucide-react";
 import { useRiskStore } from "@/store/useRiskStore";
 import { useAlcaldias } from "@/hooks/useAlcaldias";
 import cdmxGeoJson from "@/assets/geo/cdmx.json";
@@ -12,10 +13,9 @@ type IrsaEntry = { irsa: number; nivel: string };
 
 function nivelToColor(nivel: string | undefined): string {
   switch (nivel) {
-    case "seguro":   return "#22c55e";
-    case "moderado": return "#eab308";
-    case "alto":     return "#f97316";
-    case "critico":  return "#ef4444";
+    case "seguro":   return "#22c55e";  // verde  — IRSA 0-40
+    case "moderado": return "#eab308";  // amarillo — IRSA 41-70
+    case "alto":     return "#ef4444";  // rojo   — IRSA 71-100
     default:         return "#6b7280";
   }
 }
@@ -23,9 +23,8 @@ function nivelToColor(nivel: string | undefined): string {
 function nivelToLabel(nivel: string | undefined): string {
   switch (nivel) {
     case "seguro":   return "Bajo";
-    case "moderado": return "Moderado";
+    case "moderado": return "Regular";
     case "alto":     return "Alto";
-    case "critico":  return "Crítico";
     default:         return "Sin datos";
   }
 }
@@ -84,7 +83,7 @@ declare global { interface Window { __lfNav?: (name: string) => void; } }
 export function CdmxLeafletMap() {
   const navigate = useNavigate();
   const { selectedAlcaldia, setSelectedAlcaldia } = useRiskStore();
-  const { zonas } = useAlcaldias();
+  const { zonas, loading } = useAlcaldias();
   const geoJsonRef = useRef<LeafletGeoJSON | null>(null);
 
   // Expose nav callback globally so Leaflet popup inline onclick can call it
@@ -126,13 +125,11 @@ export function CdmxLeafletMap() {
         const entry     = irsaRef.current[name];
         const color     = nivelToColor(entry?.nivel);
         const label     = nivelToLabel(entry?.nivel);
-        const irsaText  = entry ? `IRSA ${entry.irsa}/100` : "Sin datos";
         return `
           <div style="min-width:155px;font-family:system-ui,sans-serif;padding:2px">
             <p style="font-weight:700;font-size:13px;margin:0 0 4px">${name}</p>
             <p style="font-size:11px;margin:0 0 10px;color:#666">
               <strong style="color:${color}">${label}</strong>
-              <span style="color:#999;margin-left:6px">${irsaText}</span>
             </p>
             <button
               data-alcaldia="${name}"
@@ -169,21 +166,33 @@ export function CdmxLeafletMap() {
   };
 
   return (
-    <MapContainer
-      center={[19.36, -99.14]}
-      zoom={11}
-      style={{ height: "100%", width: "100%" }}
-      zoomControl={false}
-      attributionControl={false}
-    >
-      <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
-      <GeoJSON
-        ref={geoJsonRef}
-        data={cdmxGeoJson as GeoJsonObject}
-        style={(f) => buildStyle(f, selectedAlcaldia, irsaByAlcaldia)}
-        onEachFeature={onEachFeature}
-      />
-      <FlyToAlcaldia />
-    </MapContainer>
+    <div className="relative h-full w-full">
+      <MapContainer
+        center={[19.36, -99.14]}
+        zoom={11}
+        style={{ height: "100%", width: "100%" }}
+        zoomControl={false}
+        attributionControl={false}
+      >
+        <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+        <GeoJSON
+          ref={geoJsonRef}
+          data={cdmxGeoJson as GeoJsonObject}
+          style={(f) => buildStyle(f, selectedAlcaldia, irsaByAlcaldia)}
+          onEachFeature={onEachFeature}
+        />
+        <FlyToAlcaldia />
+      </MapContainer>
+
+      {/* Overlay mientras se calculan los diagnósticos de todas las alcaldías */}
+      {loading && (
+        <div className="absolute inset-0 z-[1000] flex flex-col items-center justify-center bg-background/75 backdrop-blur-sm">
+          <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          <p className="mt-3 text-sm font-medium text-muted-foreground">
+            Calculando índices IRSA…
+          </p>
+        </div>
+      )}
+    </div>
   );
 }

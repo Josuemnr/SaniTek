@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { api, getAlcaldiaId, type IrsaDiagnosticApiResponse } from '@/Services/backendApi';
 import {
   getDetalleAlcaldia,
+  HUMEDAD_TIPICA,
   type DetalleAlcaldia,
   type RiskTag,
 } from '@/Components/modules/detalle-alcaldia/detalle-alcaldia-data';
@@ -14,22 +15,26 @@ function riskLevelToTag(level: string): RiskTag {
   switch (level) {
     case 'LOW':      return 'Óptimo';
     case 'MODERATE': return 'Moderado';
-    case 'HIGH':     return 'Alto';
-    case 'CRITICAL': return 'Crítico';
+    case 'HIGH':
+    case 'CRITICAL': return 'Alto';
     default:         return 'Moderado';
   }
 }
 
 function irsaDescripcion(irsa: number): string {
-  if (irsa <= 40) return 'Nivel óptimo para operaciones normales';
-  if (irsa <= 60) return 'Riesgo moderado, monitoreo continuo recomendado';
-  if (irsa <= 80) return 'Nivel de riesgo elevado, atención prioritaria';
-  return 'Riesgo crítico, intervención inmediata necesaria';
+  if (irsa <= 40) return 'Nivel bajo de riesgo sanitario ambiental';
+  if (irsa <= 70) return 'Nivel regular — monitoreo continuo recomendado';
+  return 'Nivel alto — atención prioritaria requerida';
 }
 
 function toDetalle(diag: IrsaDiagnosticApiResponse): DetalleAlcaldia {
-  const irsa = Math.round((diag.irsaScore || 0) * 10) / 10;
+  const irsa        = Math.round((diag.irsaScore   || 0) * 10) / 10;
+  // pollutantScore 0-1 → 0-100
   const calidadAire = Math.round((diag.pollutantScore || 0) * 100);
+  // normTmp 0-1, umbral OMS = 35°C → temperatura real aproximada
+  const temperatura = Math.round((diag.normTmp || 0) * 35 * 10) / 10;
+  // Humedad no viene del backend → usamos valor típico por alcaldía
+  const humedad     = HUMEDAD_TIPICA[diag.municipalityName] ?? 60;
 
   return {
     nombre: diag.municipalityName || 'Desconocida',
@@ -38,8 +43,8 @@ function toDetalle(diag: IrsaDiagnosticApiResponse): DetalleAlcaldia {
     irsaMax: 100,
     irsaDescripcion: irsaDescripcion(irsa),
     variables: {
-      temperatura:       20,
-      humedad:           60,
+      temperatura,
+      humedad,
       calidadAire,
       riesgoTemperatura: riskLevelToTag(diag.riskLevel || 'MODERATE'),
     },

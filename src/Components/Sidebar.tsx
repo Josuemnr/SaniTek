@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Map, History, Car, Users, CreditCard, UserCog, LogOut, ShieldCheck } from 'lucide-react';
 import { UserAvatar } from './UserAvatar';
-import { useAuth } from '../Context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 interface NavItem {
   label: string;

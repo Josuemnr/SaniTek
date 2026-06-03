@@ -4,16 +4,16 @@ import { useRiskStore } from './useRiskStore';
 describe('useRiskStore', () => {
   beforeEach(() => {
     useRiskStore.setState({
-      currentTime: 0,
+      selectedDayOffset: 0,
       riskPoints: [],
       selectedAlcaldia: null,
+      alcaldiaIdMap: {},
     });
   });
 
-  it('should set currentTime', () => {
-    const time = Date.now();
-    useRiskStore.getState().setCurrentTime(time);
-    expect(useRiskStore.getState().currentTime).toBe(time);
+  it('should set selectedDayOffset', () => {
+    useRiskStore.getState().setSelectedDayOffset(-3);
+    expect(useRiskStore.getState().selectedDayOffset).toBe(-3);
   });
 
   it('should set riskPoints', () => {
@@ -28,5 +28,11 @@ describe('useRiskStore', () => {
     const alcaldia = 'Coyoacán';
     useRiskStore.getState().setSelectedAlcaldia(alcaldia);
     expect(useRiskStore.getState().selectedAlcaldia).toBe(alcaldia);
+  });
+
+  it('should set alcaldiaIdMap', () => {
+    const map = { Coyoacan: 62, 'Benito Juarez': 60 };
+    useRiskStore.getState().setAlcaldiaIdMap(map);
+    expect(useRiskStore.getState().alcaldiaIdMap).toEqual(map);
   });
 });

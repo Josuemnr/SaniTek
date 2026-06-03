@@ -3,7 +3,7 @@ import { User, Shield, Check } from 'lucide-react';
 import { ProfileCard } from '../Components/modules/perfil_usuario/ProfileCard';
 import { PasswordInput } from '../Components/modules/perfil_usuario/PasswordInput';
 import { validatePasswordStrict } from '@/hooks/usePasswordStrength';
-import { useAuth } from '@/Context/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/Services/backendApi';
 import { changeCurrentUserPassword, updateStoredAuthUser } from '@/Services/authService';
 import { toast } from 'sonner';

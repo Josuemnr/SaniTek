@@ -9,19 +9,19 @@ describe('Navbar Component', () => {
     expect(logo).toBeInTheDocument();
   });
 
-  it('renders navigation links: Mapa, Historial, Hoy NO circula, administración (NAV-02)', () => {
+  it('renders navigation links from the public dashboard nav (NAV-02)', () => {
     render(<Navbar />);
     expect(screen.getByText(/mapa/i)).toBeInTheDocument();
     expect(screen.getByText(/historial/i)).toBeInTheDocument();
     expect(screen.getByText(/hoy no circula/i)).toBeInTheDocument();
-    expect(screen.getByText(/administración/i)).toBeInTheDocument();
+    expect(screen.getByText(/alertas sanitarias/i)).toBeInTheDocument();
   });
 
   it('renders search input and allows typing (NAV-03)', () => {
     render(<Navbar />);
     const searchInput = screen.getByPlaceholderText(/buscar/i);
     expect(searchInput).toBeInTheDocument();
-    
+
     fireEvent.change(searchInput, { target: { value: 'test search' } });
     expect(searchInput).toHaveValue('test search');
   });

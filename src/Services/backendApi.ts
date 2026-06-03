@@ -56,6 +56,47 @@ export interface IrsaDiagnosticApiResponse {
   smokingCount: number;
 }
 
+export interface IrsaTimelinePointApi {
+  offsetDays: number;
+  label: string;
+  windowFrom: string;
+  windowTo: string;
+  irsaScore: number;
+  riskLevel: string;
+  pollutantScore: number;
+  vulnerabilityFactor: number;
+}
+
+export interface IrsaTimelineApiResponse {
+  municipalityId: number;
+  municipalityName: string;
+  latestMeasurementAt: string;
+  daysBack: number;
+  points: IrsaTimelinePointApi[];
+}
+
+export interface IrsaTimelineMunicipalityPointApi {
+  municipalityId: number;
+  municipalityName: string;
+  offsetDays: number;
+  label: string;
+  latestMeasurementAt: string | null;
+  windowFrom: string | null;
+  windowTo: string | null;
+  irsaScore: number | null;
+  riskLevel: string | null;
+  pollutantScore: number | null;
+  vulnerabilityFactor: number | null;
+  status: 'OK' | 'ERROR' | string;
+  error: string | null;
+}
+
+export interface IrsaTimelineSnapshotApiResponse {
+  offsetDays: number;
+  label: string;
+  municipalities: IrsaTimelineMunicipalityPointApi[];
+}
+
 export interface TrendPointApi {
   label: string;
   avgIrsa: number;
@@ -266,6 +307,10 @@ export const api = {
       get<IrsaApiResponse[]>(`/api/irsa/daily?date=${date}`).then(onlyCdmxIrsa),
     diagnostic: (id: number) =>
       get<IrsaDiagnosticApiResponse>(`/api/irsa/diagnostic/${id}`),
+    timelineSnapshot: (offsetDays = 0) =>
+      get<IrsaTimelineSnapshotApiResponse>(`/api/irsa/diagnostic/timeline?offsetDays=${offsetDays}`),
+    timeline: (id: number, daysBack = 10) =>
+      get<IrsaTimelineApiResponse>(`/api/irsa/diagnostic/${id}/timeline?daysBack=${daysBack}`),
     trend: (id: number, period = 'MONTHLY', count = 12) =>
       get<IrsaTrendApiResponse>(
         `/api/irsa/trend/${id}?period=${period}&count=${count}`
@@ -282,26 +327,29 @@ export const api = {
 };
 
 export const ALCALDIA_ID: Record<string, number> = {
-  'Tlalpan':                2,
-  'Benito Juarez':          4,
-  'Benito Juárez':          4,
-  'Azcapotzalco':           5,
-  'Coyoacan':               6,
-  'Coyoacán':               6,
-  'Cuajimalpa':             8,
-  'Cuajimalpa de Morelos':  8,
-  'Gustavo A. Madero':      11,
-  'Cuauhtemoc':             12,
-  'Cuauhtémoc':             12,
-  'Iztacalco':              14,
-  'Venustiano Carranza':    17,
-  'Miguel Hidalgo':         18,
-  'Milpa Alta':             20,
-  'Alvaro Obregon':         22,
-  'Álvaro Obregón':         22,
-  'Iztapalapa':             23,
-  'Tlahuac':                24,
-  'Tláhuac':                24,
+  'Tlalpan':                58,
+  'Benito Juarez':          60,
+  'Benito Juárez':          60,
+  'Azcapotzalco':           61,
+  'Coyoacan':               62,
+  'Coyoacán':               62,
+  'Cuajimalpa':             64,
+  'Cuajimalpa de Morelos':  64,
+  'Gustavo A. Madero':      67,
+  'Cuauhtemoc':             68,
+  'Cuauhtémoc':             68,
+  'Iztacalco':              70,
+  'Venustiano Carranza':    73,
+  'Miguel Hidalgo':         74,
+  'Milpa Alta':             76,
+  'Alvaro Obregon':         78,
+  'Álvaro Obregón':         78,
+  'Magdalena Contreras':    79,
+  'La Magdalena Contreras': 79,
+  'Iztapalapa':             80,
+  'Tlahuac':                81,
+  'Tláhuac':                81,
+  'Xochimilco':             84,
 };
 
 export const CDMX_MUNICIPALITY_IDS = new Set(Object.values(ALCALDIA_ID));

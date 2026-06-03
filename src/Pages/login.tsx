@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { CustomImput } from '../Components/modules/login/CustomImput';
 import { PrimaryButton } from '../Components/modules/login/PrimaryButton';
 import { PantallaCarga } from '../Components/modules/login/Pantalla_Carga';
-import { useAuth } from '../Context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 export default function Login() {
   const navigate = useNavigate();

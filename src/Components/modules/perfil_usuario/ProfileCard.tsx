@@ -1,5 +1,3 @@
-import { Camera } from 'lucide-react';
-
 interface Props {
   name: string;
   email: string;

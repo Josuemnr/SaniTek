@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useRiskStore } from "@/store/useRiskStore";
 import { useDetalleAlcaldia } from "@/hooks/useDetalleAlcaldia";
 import { useAlerts } from "@/hooks/useAlerts";
-import { useAuth } from "@/Context/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { getDetalleAlcaldia, type RiskTag } from "@/Components/modules/detalle-alcaldia/detalle-alcaldia-data";
 import { IRSACard } from "@/Components/modules/detalle-alcaldia/IRSACard";
 import { VariablesGrid } from "@/Components/modules/detalle-alcaldia/VariablesGrid";

@@ -7,11 +7,14 @@ import { useRiskStore } from "@/store/useRiskStore"
 import { useAlcaldiaPanel } from "@/hooks/useAlcaldiaPanel"
 import { cn } from "@/lib/utils"
 
+// Claves en inglés: coinciden con riskLevel del backend (LOW | MODERATE | HIGH)
+// Escala: LOW = 0-40 verde | MODERATE = 41-70 amarillo | HIGH = 71-100 rojo
 const NIVEL_CONFIG: Record<string, { label: string; color: string; barColor: string; destructive: boolean }> = {
-  CRITICO:  { label: "Crítico",     color: "text-red-500",    barColor: "bg-red-500",    destructive: true  },
-  ALTO:     { label: "Alto riesgo", color: "text-amber-500",  barColor: "bg-amber-400",  destructive: true  },
-  MODERADO: { label: "Moderado",    color: "text-yellow-500", barColor: "bg-yellow-400", destructive: false },
-  BAJO:     { label: "Seguro",      color: "text-emerald-500",barColor: "bg-emerald-500",destructive: false },
+  HIGH:     { label: "IRSA Alto",    color: "text-red-500",    barColor: "bg-red-500",    destructive: true  },
+  MODERATE: { label: "IRSA Regular", color: "text-yellow-500", barColor: "bg-yellow-400", destructive: false },
+  LOW:      { label: "IRSA Bajo",    color: "text-emerald-500",barColor: "bg-emerald-500",destructive: false },
+  // Retrocompatibilidad con registros históricos que puedan tener CRITICAL
+  CRITICAL: { label: "IRSA Alto",    color: "text-red-500",    barColor: "bg-red-500",    destructive: true  },
 }
 
 function MiniProgress({ value, colorClass }: { value: number; colorClass: string }) {
@@ -61,10 +64,11 @@ export function AlcaldiaInfoPanel() {
 
   if (!selectedAlcaldia) return null
 
-  const nivel = data ? NIVEL_CONFIG[data.nivelRiesgo] ?? NIVEL_CONFIG["MODERADO"] : null
+  const nivel = data ? NIVEL_CONFIG[data.nivelRiesgo] ?? NIVEL_CONFIG["MODERATE"] : null
 
-  // puntajeAire: 0-100 donde mayor = peor. Invertimos para mostrar "calidad".
-  const calidadAire = data ? Math.max(0, 100 - data.puntajeAire) : null
+  // puntajeAire viene del backend en escala 0-1. Lo convertimos a 0-100 e invertimos
+  // para mostrar "calidad de aire" (mayor = mejor).
+  const calidadAire = data ? Math.max(0, 100 - data.puntajeAire * 100) : null
   const aireColor   = calidadAire == null ? "bg-muted-foreground"
                     : calidadAire >= 70   ? "bg-emerald-500"
                     : calidadAire >= 40   ? "bg-amber-400"
@@ -121,7 +125,7 @@ export function AlcaldiaInfoPanel() {
             <div className="flex items-center justify-between rounded-md bg-muted/40 px-3 py-2">
               <span className="text-xs text-muted-foreground">Índice IRSA</span>
               <span className={cn("text-sm font-bold tabular-nums", nivel?.color)}>
-                {(data.valorIrsa * 100).toFixed(1)}
+                {data.valorIrsa.toFixed(1)}
                 <span className="text-xs font-normal text-muted-foreground ml-0.5">/ 100</span>
               </span>
             </div>

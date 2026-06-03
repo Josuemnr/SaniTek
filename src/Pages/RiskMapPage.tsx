@@ -3,9 +3,9 @@ import { SlidersHorizontal } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 import { SidebarAlcaldias } from "@/Components/modules/risk-map/SidebarAlcaldias";
 import { QuickStatsCard } from "@/Components/modules/risk-map/QuickStatsCard";
-import { TemporalControl } from "@/Components/modules/risk-map/TemporalControl";
 import { AlcaldiaInfoPanel } from "@/Components/modules/risk-map/AlcaldiaInfoPanel";
 import { CdmxLeafletMap } from "@/Components/modules/risk-map/CdmxLeafletMap";
+import { TemporalControl } from "@/Components/modules/risk-map/TemporalControl";
 import { BackgroundBeams } from "@/Components/ui/background-beams";
 
 export function RiskMapPage() {
@@ -32,19 +32,20 @@ export function RiskMapPage() {
           <CdmxLeafletMap />
         </div>
 
-        <div className="z-20 absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-3 pointer-events-auto">
-          <div className="w-xl">
-            <TemporalControl />
-          </div>
+        <div className="z-20 absolute bottom-6 right-4 pointer-events-auto">
           <Button
             variant="secondary"
             size="sm"
-            className="h-9 gap-2 shadow-md shrink-0"
+            className="h-9 gap-2 shadow-md"
             onClick={() => navigate("/filtrar")}
           >
             <SlidersHorizontal className="w-4 h-4" />
             Filtros
           </Button>
+        </div>
+
+        <div className="z-20 absolute bottom-5 left-1/2 -translate-x-1/2 pointer-events-auto">
+          <TemporalControl />
         </div>
       </div>
     </div>
