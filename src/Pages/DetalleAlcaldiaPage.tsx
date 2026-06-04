@@ -126,10 +126,9 @@ export function DetalleAlcaldiaPage() {
 
   // Mapear el ID de la alcaldía para la suscripción
   const municipalityId = getAlcaldiaId(selectedAlcaldia);
-  // TODO: Obtener el ID numérico del usuario desde el backend. Por ahora usamos un mock o asumimos que se manejará.
-  const mockUserId = 1; 
+  const userId = user?.id ?? null;
   
-  const { isSubscribed, toggleSubscription, loading: loadingAlert } = useAlerts(user ? mockUserId : null, municipalityId);
+  const { isSubscribed, toggleSubscription, loading: loadingAlert } = useAlerts(userId, municipalityId);
 
   const data = detalle ?? getDetalleAlcaldia(selectedAlcaldia ?? "");
 

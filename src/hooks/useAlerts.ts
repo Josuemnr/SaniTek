@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { api } from '@/Services/backendApi';
 import { toast } from 'sonner';
 
@@ -17,11 +17,15 @@ export function useAlerts(userId: number | null, municipalityId: number | null) 
 
       try {
         const activeAlerts = await api.alerts.listActiveByUser(userId);
-        const sub = activeAlerts.find(a => a.municipality.id === municipalityId);
-        setIsSubscribed(!!sub);
-        setAlertId(sub?.id ?? null);
+        const subscription = activeAlerts.find(
+          (alert) => alert.municipality.id === municipalityId
+        );
+        setIsSubscribed(Boolean(subscription));
+        setAlertId(subscription?.id ?? null);
       } catch (error) {
-        console.error('Error checking subscription:', error);
+        console.error('[useAlerts] error al consultar suscripcion:', error);
+        setIsSubscribed(false);
+        setAlertId(null);
       }
     };
 
@@ -30,7 +34,7 @@ export function useAlerts(userId: number | null, municipalityId: number | null) 
 
   const toggleSubscription = async () => {
     if (!userId || !municipalityId) {
-      toast.error('Debes iniciar sesión para suscribirte');
+      toast.error(!userId ? 'Debes iniciar sesion para suscribirte' : 'No se pudo identificar la alcaldia');
       return;
     }
 
@@ -40,16 +44,17 @@ export function useAlerts(userId: number | null, municipalityId: number | null) 
         await api.alerts.deactivate(alertId);
         setIsSubscribed(false);
         setAlertId(null);
-        toast.success('Suscripción cancelada');
-      } else {
-        const res = await api.alerts.subscribe(userId, municipalityId);
-        setIsSubscribed(true);
-        setAlertId(res.id);
-        toast.success('¡Te avisaremos cuando el riesgo sea alto!');
+        toast.success('Suscripcion cancelada');
+        return;
       }
+
+      const alert = await api.alerts.subscribe(userId, municipalityId);
+      setIsSubscribed(true);
+      setAlertId(alert.id);
+      toast.success('Te avisaremos cuando el riesgo sea alto');
     } catch (error) {
-      console.error('Error toggling subscription:', error);
-      toast.error('Ocurrió un error al procesar tu solicitud');
+      console.error('[useAlerts] error al cambiar suscripcion:', error);
+      toast.error(error instanceof Error ? error.message : 'Ocurrio un error al procesar tu solicitud');
     } finally {
       setLoading(false);
     }
