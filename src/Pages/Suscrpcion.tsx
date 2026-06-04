@@ -48,7 +48,7 @@ export default function Suscrpcion() {
   };
 
   return (
-    <div style={{ flex: 1, background: '#f8fafc', padding: '36px 32px', boxSizing: 'border-box', textAlign: 'left' }}>
+    <div style={{ flex: 1, height: '100%', overflowY: 'auto', background: '#f8fafc', padding: '36px 32px', boxSizing: 'border-box', textAlign: 'left' }}>
       <div style={{ maxWidth: 860, margin: '0 auto' }}>
 
         

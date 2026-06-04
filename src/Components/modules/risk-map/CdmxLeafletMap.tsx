@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import type { GeoJsonObject, Feature } from "geojson";
 import type { PathOptions, GeoJSON as LeafletGeoJSON } from "leaflet";
@@ -12,74 +12,110 @@ import { useNavigate } from "react-router-dom";
 type IrsaEntry = { irsa: number; nivel: string };
 
 function nivelToColor(nivel: string | undefined): string {
-  switch (nivel) {
-    case "seguro":   return "#22c55e";  // verde  — IRSA 0-40
-    case "moderado": return "#eab308";  // amarillo — IRSA 41-70
-    case "alto":     return "#ef4444";  // rojo   — IRSA 71-100
-    default:         return "#6b7280";
+  switch (nivel?.trim().toLowerCase()) {
+    case "seguro":
+      return "#22c55e";
+    case "moderado":
+      return "#eab308";
+    case "alto":
+    case "critico":
+      return "#ef4444";
+    default:
+      return "#6b7280";
   }
 }
 
 function nivelToLabel(nivel: string | undefined): string {
-  switch (nivel) {
-    case "seguro":   return "IRSA Bajo";
-    case "moderado": return "IRSA Regular";
-    case "alto":     return "IRSA Alto";
-    case "critico":  return "IRSA Alto";
-    default:         return "Sin datos";
+  switch (nivel?.trim().toLowerCase()) {
+    case "seguro":
+      return "IRSA Bajo";
+    case "moderado":
+      return "IRSA Regular";
+    case "alto":
+    case "critico":
+      return "IRSA Alto";
+    default:
+      return "Sin datos";
   }
 }
 
+function withoutAccents(value: string): string {
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function normalizeAlcaldiaName(value: string): string {
+  return withoutAccents(value).trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+function getIrsaEntry(name: string | undefined, irsaMap: Record<string, IrsaEntry>) {
+  if (!name) return undefined;
+  return irsaMap[name] ?? irsaMap[normalizeAlcaldiaName(name)];
+}
+
 const FLY_TO: Record<string, [number, number]> = {
-  "Álvaro Obregón":         [19.378, -99.223],
-  "Azcapotzalco":           [19.485, -99.185],
-  "Benito Juárez":          [19.378, -99.155],
-  "Coyoacán":               [19.335, -99.155],
-  "Cuajimalpa de Morelos":  [19.390, -99.315],
-  "Cuauhtémoc":             [19.434, -99.150],
-  "Gustavo A. Madero":      [19.520, -99.110],
-  "Iztacalco":              [19.375, -99.100],
-  "Iztapalapa":             [19.340, -99.055],
-  "La Magdalena Contreras": [19.320, -99.255],
-  "Miguel Hidalgo":         [19.430, -99.220],
-  "Milpa Alta":             [19.155, -99.015],
-  "Tláhuac":                [19.255, -99.020],
-  "Tlalpan":                [19.240, -99.175],
-  "Venustiano Carranza":    [19.430, -99.095],
-  "Xochimilco":             [19.265, -99.105],
+  "Alvaro Obregon": [19.378, -99.223],
+  "Azcapotzalco": [19.485, -99.185],
+  "Benito Juarez": [19.378, -99.155],
+  "Coyoacan": [19.335, -99.155],
+  "Cuajimalpa de Morelos": [19.39, -99.315],
+  "Cuauhtemoc": [19.434, -99.15],
+  "Gustavo A. Madero": [19.52, -99.11],
+  "Iztacalco": [19.375, -99.1],
+  "Iztapalapa": [19.34, -99.055],
+  "La Magdalena Contreras": [19.32, -99.255],
+  "Miguel Hidalgo": [19.43, -99.22],
+  "Milpa Alta": [19.155, -99.015],
+  "Tlahuac": [19.255, -99.02],
+  "Tlalpan": [19.24, -99.175],
+  "Venustiano Carranza": [19.43, -99.095],
+  "Xochimilco": [19.265, -99.105],
 };
+
+function flyToPoint(name: string | null): [number, number] | undefined {
+  if (!name) return undefined;
+  return FLY_TO[name] ?? FLY_TO[withoutAccents(name)];
+}
 
 function buildStyle(
   feature: Feature | undefined,
   selected: string | null,
   irsaMap: Record<string, IrsaEntry>
 ): PathOptions {
-  const name     = feature?.properties?.NOMGEO as string | undefined;
+  const name = feature?.properties?.NOMGEO as string | undefined;
   const isActive = name === selected;
-  const color    = isActive ? "#3b82f6" : nivelToColor(name ? irsaMap[name]?.nivel : undefined);
+  const entry = getIrsaEntry(name, irsaMap);
+  const color = isActive ? "#3b82f6" : nivelToColor(entry?.nivel);
+
   return {
-    fillColor:   color,
-    fillOpacity: isActive ? 0.55 : 0.30,
-    color:       isActive ? "#1d4ed8" : color,
-    weight:      isActive ? 3 : 1.5,
-    opacity:     0.9,
+    fillColor: color,
+    fillOpacity: isActive ? 0.55 : 0.3,
+    color: isActive ? "#1d4ed8" : color,
+    weight: isActive ? 3 : 1.5,
+    opacity: 0.9,
   };
 }
 
 function FlyToAlcaldia() {
   const map = useMap();
   const { selectedAlcaldia } = useRiskStore();
+
   useEffect(() => {
-    if (selectedAlcaldia && FLY_TO[selectedAlcaldia]) {
-      map.flyTo(FLY_TO[selectedAlcaldia], 13, { duration: 0.7 });
+    const point = flyToPoint(selectedAlcaldia);
+    if (point) {
+      map.flyTo(point, 13, { duration: 0.7 });
     } else if (!selectedAlcaldia) {
       map.flyTo([19.36, -99.14], 11, { duration: 0.7 });
     }
   }, [map, selectedAlcaldia]);
+
   return null;
 }
 
-declare global { interface Window { __lfNav?: (name: string) => void; } }
+declare global {
+  interface Window {
+    __lfNav?: (name: string) => void;
+  }
+}
 
 export function CdmxLeafletMap() {
   const navigate = useNavigate();
@@ -87,25 +123,38 @@ export function CdmxLeafletMap() {
   const { zonas, loading } = useAlcaldias();
   const geoJsonRef = useRef<LeafletGeoJSON | null>(null);
 
-  // Expose nav callback globally so Leaflet popup inline onclick can call it
   useEffect(() => {
-    window.__lfNav = (name: string) => { setSelectedAlcaldia(name); navigate("/detalle"); };
-    return () => { delete window.__lfNav; };
+    window.__lfNav = (name: string) => {
+      setSelectedAlcaldia(name);
+      navigate("/detalle");
+    };
+    return () => {
+      delete window.__lfNav;
+    };
   }, [navigate, setSelectedAlcaldia]);
 
   const irsaByAlcaldia = useMemo(() => {
     const map: Record<string, IrsaEntry> = {};
-    for (const z of zonas) map[z.alcaldia || z.nombre] = { irsa: z.calidadAire, nivel: z.riskLevel };
+    for (const z of zonas) {
+      const name = z.alcaldia || z.nombre;
+      const entry = { irsa: z.calidadAire, nivel: z.riskLevel };
+      map[name] = entry;
+      map[normalizeAlcaldiaName(name)] = entry;
+    }
     return map;
   }, [zonas]);
 
-  // Refs so that event handlers (bound once at mount) always read current values
   const selectedRef = useRef(selectedAlcaldia);
-  const irsaRef     = useRef(irsaByAlcaldia);
-  useEffect(() => { selectedRef.current = selectedAlcaldia;  }, [selectedAlcaldia]);
-  useEffect(() => { irsaRef.current     = irsaByAlcaldia;    }, [irsaByAlcaldia]);
+  const irsaRef = useRef(irsaByAlcaldia);
 
-  // Re-style all layers when selection or data changes
+  useEffect(() => {
+    selectedRef.current = selectedAlcaldia;
+  }, [selectedAlcaldia]);
+
+  useEffect(() => {
+    irsaRef.current = irsaByAlcaldia;
+  }, [irsaByAlcaldia]);
+
   useEffect(() => {
     if (!geoJsonRef.current) return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -123,9 +172,10 @@ export function CdmxLeafletMap() {
 
     layer.bindPopup(
       () => {
-        const entry     = irsaRef.current[name];
-        const color     = nivelToColor(entry?.nivel);
-        const label     = nivelToLabel(entry?.nivel);
+        const entry = getIrsaEntry(name, irsaRef.current);
+        const color = nivelToColor(entry?.nivel);
+        const label = nivelToLabel(entry?.nivel);
+
         return `
           <div style="min-width:155px;font-family:system-ui,sans-serif;padding:2px">
             <p style="font-weight:700;font-size:13px;margin:0 0 4px">${name}</p>
@@ -139,7 +189,7 @@ export function CdmxLeafletMap() {
               onmouseout="this.style.background='#3b82f6'"
               style="width:100%;padding:6px 0;background:#3b82f6;color:#fff;border:none;
                 border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">
-              Ver información →
+              Ver informacion
             </button>
           </div>`;
       },
@@ -154,7 +204,7 @@ export function CdmxLeafletMap() {
       },
       mouseover() {
         if (name !== selectedRef.current) {
-          layer.setStyle({ fillOpacity: 0.50, weight: 2.5 });
+          layer.setStyle({ fillOpacity: 0.5, weight: 2.5 });
         }
         layer.bringToFront();
       },
@@ -185,12 +235,11 @@ export function CdmxLeafletMap() {
         <FlyToAlcaldia />
       </MapContainer>
 
-      {/* Overlay mientras se calculan los diagnósticos de todas las alcaldías */}
       {loading && (
         <div className="absolute inset-0 z-[1000] flex flex-col items-center justify-center bg-background/75 backdrop-blur-sm">
           <Loader2 className="h-10 w-10 animate-spin text-primary" />
           <p className="mt-3 text-sm font-medium text-muted-foreground">
-            Calculando índices IRSA…
+            Calculando indices IRSA...
           </p>
         </div>
       )}

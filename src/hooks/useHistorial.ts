@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { api, getAlcaldiaId, type TrendPointApi } from '@/Services/backendApi';
 import {
   DATA_CDMX,
@@ -8,10 +8,8 @@ import {
 } from '@/Components/modules/historial-riesgos/historial-data';
 
 const MES_INDEX: Record<string, number> = {
-  // El backend nuevo devuelve etiquetas en inglés: "Jan 2025", "Feb 2025", …
   Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
   Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11,
-  // Soporte legacy por si los datos tienen meses en español
   Ene: 0, Abr: 3, Ago: 7, Dic: 11,
 };
 
@@ -39,17 +37,16 @@ function puntosADataPoints(puntos: TrendPointApi[]): DataPoint[] {
 }
 
 export function useHistorial(nombreAlcaldia: string | null, selectedYear: number) {
-  const [allPuntos, setAllPuntos]           = useState<TrendPointApi[]>([]);
+  const [allPuntos, setAllPuntos] = useState<TrendPointApi[]>([]);
   const [availableYears, setAvailableYears] = useState<number[]>([new Date().getFullYear()]);
-  const [data, setData]                     = useState<DataPoint[]>(DATA_CDMX);
-  const [metricas, setMetricas]             = useState<Metricas>(getMetricas(DATA_CDMX));
-  const [loading, setLoading]               = useState(false);
-  const [alcaldiaName, setAlcaldiaName]     = useState<string>('CDMX');
+  const [data, setData] = useState<DataPoint[]>(DATA_CDMX);
+  const [metricas, setMetricas] = useState<Metricas>(getMetricas(DATA_CDMX));
+  const [loading, setLoading] = useState(false);
+  const [alcaldiaName, setAlcaldiaName] = useState<string>('CDMX');
 
-  // Fetch a wide range (48 months) when alcaldía changes — covers ~4 years
   useEffect(() => {
-    const nombre = nombreAlcaldia ?? 'Cuauhtémoc';
-    const id     = getAlcaldiaId(nombre) ?? getAlcaldiaId('Cuauhtemoc') ?? 12;
+    const nombre = nombreAlcaldia ?? 'Cuauhtemoc';
+    const id = getAlcaldiaId(nombre) ?? getAlcaldiaId('Cuauhtemoc') ?? 12;
 
     setLoading(true);
     api.irsa
@@ -72,11 +69,10 @@ export function useHistorial(nombreAlcaldia: string | null, selectedYear: number
       .finally(() => setLoading(false));
   }, [nombreAlcaldia]);
 
-  // Refilter data when year or fetched data changes
   useEffect(() => {
-    const now          = new Date();
-    const currentYear  = now.getFullYear();
-    const currentMonth = now.getMonth(); // 0-indexed
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
 
     let filtered = allPuntos.filter((p) => etiquetaAnio(p.label) === selectedYear);
 

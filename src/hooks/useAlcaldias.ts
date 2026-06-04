@@ -12,7 +12,7 @@ import {
 } from '@/Components/modules/filtrar-alcaldias/alcaldias-filter-data';
 import { useRiskStore } from '@/store/useRiskStore';
 
-const CACHE_KEY_PREFIX = 'sanitek:alcaldias-irsa-cache:v2';
+const CACHE_KEY_PREFIX = 'sanitek:alcaldias-irsa-cache:v3';
 const CACHE_TTL_MS = 10 * 60 * 1000;
 
 interface AlcaldiasCache {
@@ -53,9 +53,9 @@ const HUMEDAD_TIPICA: Record<string, number> = {
   'Xochimilco':             80,
 };
 
-// El backend usa: LOW (0-40) | MODERATE (41-70) | HIGH (71-100)
+// El backend usa: LOW (<=30) | MODERATE (<=50) | HIGH (>50)
 function riskLevelToZona(level: string): RiskLevel {
-  switch (level) {
+  switch (level.trim().toUpperCase()) {
     case 'LOW':      return 'seguro';
     case 'MODERATE': return 'moderado';
     case 'HIGH':

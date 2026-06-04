@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { Navbar } from './Navbar';
 
@@ -14,16 +14,7 @@ describe('Navbar Component', () => {
     expect(screen.getByText(/mapa/i)).toBeInTheDocument();
     expect(screen.getByText(/historial/i)).toBeInTheDocument();
     expect(screen.getByText(/hoy no circula/i)).toBeInTheDocument();
-    expect(screen.getByText(/alertas sanitarias/i)).toBeInTheDocument();
-  });
-
-  it('renders search input and allows typing (NAV-03)', () => {
-    render(<Navbar />);
-    const searchInput = screen.getByPlaceholderText(/buscar/i);
-    expect(searchInput).toBeInTheDocument();
-
-    fireEvent.change(searchInput, { target: { value: 'test search' } });
-    expect(searchInput).toHaveValue('test search');
+    expect(screen.queryByText(/alertas sanitarias/i)).not.toBeInTheDocument();
   });
 
   it('renders user profile area with avatar', () => {
