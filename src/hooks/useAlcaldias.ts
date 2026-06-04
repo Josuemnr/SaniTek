@@ -168,11 +168,17 @@ async function loadAlcaldiasIrsa(dayOffset: number): Promise<AlcaldiasCache> {
         municipalities.map((m) => api.irsa.diagnostic(m.id))
       );
 
-      const realtimeZonas: Zona[] = municipalities
+      const realtimeZonas: any[] = municipalities
         .map((m, i) => {
           const result = diagResults[i];
           if (result.status === 'fulfilled') {
-            return diagToZona(m, result.value);
+            const diag = result.value;
+            const nombre = NOMBRE_NORMALIZADO[m.municipalityName] ?? m.municipalityName;
+            return {
+              ...diagToZona(m, diag),
+              // Guardamos el raw para el panel de información
+              _fullDiagnostic: diag
+            };
           }
 
           if (!m.currentIrsa) return null;
@@ -241,18 +247,31 @@ function buildIdMap(municipalities: { id: number; municipalityName: string }[]) 
 
 export function useAlcaldias() {
   const selectedDayOffset    = useRiskStore((s) => s.selectedDayOffset);
+  const setAlcaldiasSnapshot = useRiskStore((s) => s.setAlcaldiasSnapshot);
+  const setAlcaldiaIdMap     = useRiskStore((s) => s.setAlcaldiaIdMap);
+  
   const cached = readCache(selectedDayOffset);
   const [zonas, setZonas]     = useState<Zona[]>(cached?.zonas ?? ZONAS_MOCK);
   const [loading, setLoading] = useState(false);
-  const setAlcaldiaIdMap      = useRiskStore((s) => s.setAlcaldiaIdMap);
 
   useEffect(() => {
     let cancelled = false;
 
+    const updateGlobalData = (result: AlcaldiasCache) => {
+      setZonas(result.zonas);
+      setAlcaldiaIdMap(result.alcaldiaIdMap);
+      
+      // Mapear zonas a snapshot para acceso instantáneo por nombre
+      const snapshot: Record<string, any> = {};
+      result.zonas.forEach(z => {
+        snapshot[z.nombre] = z;
+      });
+      setAlcaldiasSnapshot(snapshot);
+    };
+
     const cachedResult = readCache(selectedDayOffset);
     if (cachedResult) {
-      setZonas(cachedResult.zonas);
-      setAlcaldiaIdMap(cachedResult.alcaldiaIdMap);
+      updateGlobalData(cachedResult);
       return () => { cancelled = true; };
     }
 
@@ -261,8 +280,7 @@ export function useAlcaldias() {
     loadAlcaldiasIrsa(selectedDayOffset)
       .then((result) => {
         if (cancelled) return;
-        setZonas(result.zonas);
-        setAlcaldiaIdMap(result.alcaldiaIdMap);
+        updateGlobalData(result);
       })
       .catch((err) => {
         console.error('[useAlcaldias] error al obtener datos:', err);
@@ -271,7 +289,7 @@ export function useAlcaldias() {
       .finally(() => { if (!cancelled) setLoading(false); });
 
     return () => { cancelled = true; };
-  }, [selectedDayOffset, setAlcaldiaIdMap]);
+  }, [selectedDayOffset, setAlcaldiaIdMap, setAlcaldiasSnapshot]);
 
   return { zonas, loading };
 }

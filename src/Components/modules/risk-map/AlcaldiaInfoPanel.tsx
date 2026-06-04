@@ -10,11 +10,16 @@ import { cn } from "@/lib/utils"
 // Claves en inglés: coinciden con riskLevel del backend (LOW | MODERATE | HIGH)
 // Escala: LOW = 0-40 verde | MODERATE = 41-70 amarillo | HIGH = 71-100 rojo
 const NIVEL_CONFIG: Record<string, { label: string; color: string; barColor: string; destructive: boolean }> = {
+  // Claves del Backend
   HIGH:     { label: "IRSA Alto",    color: "text-red-500",    barColor: "bg-red-500",    destructive: true  },
   MODERATE: { label: "IRSA Regular", color: "text-yellow-500", barColor: "bg-yellow-400", destructive: false },
   LOW:      { label: "IRSA Bajo",    color: "text-emerald-500",barColor: "bg-emerald-500",destructive: false },
-  // Retrocompatibilidad con registros históricos que puedan tener CRITICAL
   CRITICAL: { label: "IRSA Alto",    color: "text-red-500",    barColor: "bg-red-500",    destructive: true  },
+  // Claves del Mapa (Sincronización)
+  alto:     { label: "IRSA Alto",    color: "text-red-500",    barColor: "bg-red-500",    destructive: true  },
+  moderado: { label: "IRSA Regular", color: "text-yellow-500", barColor: "bg-yellow-400", destructive: false },
+  seguro:   { label: "IRSA Bajo",    color: "text-emerald-500",barColor: "bg-emerald-500",destructive: false },
+  critico:  { label: "IRSA Alto",    color: "text-red-500",    barColor: "bg-red-500",    destructive: true  },
 }
 
 function MiniProgress({ value, colorClass }: { value: number; colorClass: string }) {

@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Map, History, Car, Users, CreditCard, UserCog, LogOut, ShieldCheck } from 'lucide-react';
 import { UserAvatar } from './UserAvatar';
 import { useAuth } from '../hooks/useAuth';
+import logo from '@/assets/logo.svg';
 
 interface NavItem {
   label: string;
@@ -72,16 +73,9 @@ export const Sidebar: React.FC = () => {
     }}>
 
       {/* Logo */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '4px 6px', marginBottom: 28 }}>
-        <div style={{
-          width: 34, height: 34, borderRadius: 9,
-          background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          flexShrink: 0,
-        }}>
-          <span style={{ color: 'white', fontWeight: 800, fontSize: 14 }}>S</span>
-        </div>
-        <span style={{ fontWeight: 700, fontSize: 15, color: '#111827', letterSpacing: '-0.3px' }}>SaniTek</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '4px 6px', marginBottom: 32 }}>
+        <img src={logo} alt="SaniTek Logo" style={{ width: 44, height: 44, objectFit: 'contain' }} />
+        <span style={{ fontWeight: 800, fontSize: 18, color: '#111827', letterSpacing: '-0.5px' }}>SaniTek</span>
       </div>
 
       {/* Main nav */}

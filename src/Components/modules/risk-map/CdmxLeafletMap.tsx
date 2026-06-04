@@ -22,9 +22,10 @@ function nivelToColor(nivel: string | undefined): string {
 
 function nivelToLabel(nivel: string | undefined): string {
   switch (nivel) {
-    case "seguro":   return "Bajo";
-    case "moderado": return "Regular";
-    case "alto":     return "Alto";
+    case "seguro":   return "IRSA Bajo";
+    case "moderado": return "IRSA Regular";
+    case "alto":     return "IRSA Alto";
+    case "critico":  return "IRSA Alto";
     default:         return "Sin datos";
   }
 }

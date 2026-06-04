@@ -15,7 +15,6 @@ import { HistorialRiesgosPage } from "@/Pages/HistorialRiesgosPage";
 import { DetalleAlcaldiaPage }  from "@/Pages/DetalleAlcaldiaPage";
 //super admin ANA
 import { SuperAdminPage }       from "@/Pages/SuperAdminPage";
-import { AlertasPage }          from "@/Pages/AlertasPage";
 import { Toaster } from 'sonner';
 import type { UserRole } from './Services/backendApi';
 
@@ -63,7 +62,6 @@ export default function App() {
             path="/superadmin"
             element={<RoleRoute allowedRoles={['SUPER_ADMIN']}><SuperAdminPage /></RoleRoute>}
           />
-          <Route path="/alertas"        element={<AlertasPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

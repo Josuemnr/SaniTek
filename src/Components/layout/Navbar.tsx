@@ -5,18 +5,21 @@ import { Input } from '@/Components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/Components/ui/dropdown-menu';
 import { Search, Bell } from 'lucide-react';
-import logo from '@/assets/logo.png';
+import logo from '@/assets/logo.svg';
 import { cn } from '@/lib/utils';
 import { NAV_LINKS } from '@/lib/nav-constants';
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between px-4">
-        <div className="flex items-center gap-8">
+    <header 
+      className="sticky top-0 z-50 w-full border-b backdrop-blur-md transition-colors shadow-sm"
+      style={{ background: 'rgba(255, 255, 255, 0.8)', borderColor: 'rgba(0, 0, 0, 0.08)' }}
+    >
+      <div className="container flex h-20 items-center justify-between px-10 mx-auto">
+        <div className="flex items-center gap-12">
           {/* Logo (NAV-01) */}
-          <div className="flex items-center gap-2">
-            <img src={logo} alt="SaniTek Logo" className="h-8 w-auto object-contain" />
+          <div className="flex items-center gap-4">
+            <img src={logo} alt="SaniTek Logo" className="h-14 w-auto object-contain" />
           </div>
 
           {/* Navigation Links (NAV-02) */}
@@ -25,7 +28,7 @@ export function Navbar() {
               {NAV_LINKS.map((link) => (
                 <NavigationMenuItem key={link.title}>
                   <NavigationMenuLink 
-                    className={cn(navigationMenuTriggerStyle(), "bg-transparent hover:bg-accent text-sm font-medium transition-colors")}
+                    className={cn(navigationMenuTriggerStyle(), "bg-transparent hover:bg-slate-100 text-slate-700 text-sm font-semibold transition-colors")}
                     href={link.href}
                   >
                     {link.title}
@@ -36,35 +39,21 @@ export function Navbar() {
           </NavigationMenu>
         </div>
 
-        <div className="flex items-center gap-4 flex-1 justify-end">
-          {/* Search Bar (NAV-03) */}
-          <div className="relative w-full max-w-[400px] hidden sm:block">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Buscar..."
-              className="pl-9 bg-accent/50 border-none focus-visible:ring-1 focus-visible:ring-ring"
-            />
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button className="p-2 hover:bg-accent rounded-full text-muted-foreground">
-              <Bell className="h-5 w-5" />
-            </button>
-            
+        <div className="flex items-center gap-6 flex-1 justify-end">
+          <div className="flex items-center gap-4 text-slate-700">
             {/* User Profile */}
             <DropdownMenu>
               <DropdownMenuTrigger
-                className="flex items-center gap-2 cursor-pointer hover:bg-accent p-1 rounded-lg transition-colors outline-none border-none bg-transparent"
+                className="flex items-center gap-3 cursor-pointer hover:bg-slate-100 p-1.5 rounded-xl transition-colors outline-none border-none bg-transparent"
                 data-testid="user-avatar"
               >
-                <Avatar className="h-8 w-8">
+                <Avatar className="h-10 w-10 border border-slate-200">
                   <AvatarImage src="" alt="User" />
-                  <AvatarFallback className="bg-primary text-primary-foreground">ST</AvatarFallback>
+                  <AvatarFallback className="bg-blue-600 text-white font-bold">ST</AvatarFallback>
                 </Avatar>
                 <div className="hidden lg:flex flex-col text-left">
-                  <span className="text-sm font-medium leading-none">Admin SaniTek</span>
-                  <span className="text-xs text-muted-foreground">admin@sanitek.com</span>
+                  <span className="text-sm font-bold leading-none text-slate-900">Admin SaniTek</span>
+                  <span className="text-xs text-slate-500">admin@sanitek.com</span>
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">

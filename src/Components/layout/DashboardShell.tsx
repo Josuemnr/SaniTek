@@ -1,8 +1,8 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { LogOut, CreditCard, UserCog, ShieldCheck, Users, ChevronUp } from "lucide-react";
+import { LogOut, CreditCard, UserCog, ShieldCheck, Users, ChevronUp, Search, Bell } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import logo from '@/assets/logo.png';
+import logo from '@/assets/logo.svg';
 import { NAV_LINKS, SCREEN_CONFIGS } from '@/lib/nav-constants';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import {
@@ -30,12 +30,12 @@ interface SidebarItemProps {
 
 const SidebarItem = ({ icon: Icon, label, active }: SidebarItemProps) => (
   <div className={cn(
-    "flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors",
+    "flex items-center gap-3 px-3 py-3 rounded-xl cursor-pointer transition-all duration-200",
     active
-      ? "bg-sidebar-accent text-sidebar-foreground font-bold shadow-sm"
-      : "hover:bg-sidebar-accent/30 text-gray-700 hover:text-gray-900"
+      ? "bg-blue-600 text-white font-bold shadow-lg shadow-blue-900/20"
+      : "hover:bg-white/10 text-blue-100 hover:text-white"
   )}>
-    <Icon className="size-5" />
+    <Icon className={cn("size-5", active ? "text-white" : "text-blue-300")} />
     <span className="font-medium text-sm">{label}</span>
   </div>
 );
@@ -90,13 +90,16 @@ export function DashboardShell() {
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background">
       {/* Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 border-r bg-sidebar p-4 gap-6">
-        <div className="flex items-center gap-3 px-2 py-4">
-          <img src={logo} alt="SaniTek Logo" className="h-10 w-auto object-contain" />
-          <h1 className="text-xl font-black tracking-tighter text-sidebar-foreground">SaniTek</h1>
+      <aside 
+        className="hidden md:flex flex-col w-72 border-r p-6 gap-8 transition-colors shadow-2xl z-20"
+        style={{ background: 'rgba(20, 35, 90, 0.95)', borderColor: 'rgba(100, 140, 255, 0.25)' }}
+      >
+        <div className="flex items-center gap-4 px-2 py-4">
+          <img src={logo} alt="SaniTek Logo" className="h-16 w-auto object-contain" />
+          <h1 className="text-2xl font-black tracking-tighter text-white">SaniTek</h1>
         </div>
 
-        <nav className="flex-1 flex flex-col gap-1">
+        <nav className="flex-1 flex flex-col gap-2">
           {NAV_LINKS.map((item) => (
             <Link key={item.title} to={item.href} className="no-underline">
               <SidebarItem
@@ -108,35 +111,35 @@ export function DashboardShell() {
           ))}
         </nav>
 
-        <div className="mt-auto flex flex-col gap-2 border-t pt-4">
+        <div className="mt-auto flex flex-col gap-2 border-t border-white/10 pt-6">
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-sidebar-accent/30 cursor-pointer transition-colors group border-none bg-transparent w-full text-left outline-none">
-              <Avatar className="h-9 w-9 border">
+            <DropdownMenuTrigger className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/10 cursor-pointer transition-colors group border-none bg-transparent w-full text-left outline-none">
+              <Avatar className="h-10 w-10 border border-white/20">
                 <AvatarImage src="" />
-                <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
+                <AvatarFallback className="bg-blue-600 text-white text-xs font-bold">
                   {userInitials}
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col overflow-hidden flex-1">
-                <span className="text-xs font-bold truncate text-gray-700">{userName}</span>
-                <span className="text-[10px] text-muted-foreground truncate">{userRole}</span>
+                <span className="text-sm font-bold truncate text-white">{userName}</span>
+                <span className="text-[11px] text-blue-200 truncate">{userRole}</span>
               </div>
-              <ChevronUp className="size-4 text-muted-foreground group-data-[state=open]:rotate-180 transition-transform" />
+              <ChevronUp className="size-4 text-blue-200 group-data-[state=open]:rotate-180 transition-transform" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" side="top" className="w-56 mb-2 ml-4">
+            <DropdownMenuContent align="start" side="top" className="w-64 mb-2 ml-4 bg-[#14235a] border-white/20 text-white">
               <DropdownMenuGroup>
-                <DropdownMenuLabel>Configuración</DropdownMenuLabel>
-                <DropdownMenuSeparator />
+                <DropdownMenuLabel className="text-blue-100">Configuración</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-white/10" />
                 {filteredAdminLinks.map((item) => (
-                  <DropdownMenuItem key={item.title} onClick={() => navigate(item.href)}>
-                    <item.icon className="mr-2 size-4" />
+                  <DropdownMenuItem key={item.title} onClick={() => navigate(item.href)} className="hover:bg-white/10 focus:bg-white/10 focus:text-white cursor-pointer">
+                    <item.icon className="mr-3 size-4 text-blue-300" />
                     <span>{item.title}</span>
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
-                <LogOut className="mr-2 size-4" />
+              <DropdownMenuSeparator className="bg-white/10" />
+              <DropdownMenuItem onClick={handleLogout} className="text-red-400 focus:text-red-400 hover:bg-red-500/10 focus:bg-red-500/10 cursor-pointer">
+                <LogOut className="mr-3 size-4" />
                 <span>Cerrar sesión</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -146,10 +149,17 @@ export function DashboardShell() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-muted/5">
-        <header className="min-h-16 border-b bg-background/50 backdrop-blur-md flex items-center px-8 justify-between shrink-0 py-3">
+        <header 
+          className="min-h-20 border-b flex items-center px-10 justify-between shrink-0 py-4 z-10 shadow-sm"
+          style={{ background: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(12px)', borderColor: 'rgba(0, 0, 0, 0.08)' }}
+        >
           <div className="flex flex-col justify-center">
-            <h2 className="text-xl font-bold tracking-tight text-foreground leading-tight">{pageTitle}</h2>
-            {subtitle && <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>}
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900 leading-tight">{pageTitle}</h2>
+            {subtitle && <p className="text-sm text-slate-500 mt-1 font-medium">{subtitle}</p>}
+          </div>
+          
+          <div className="flex items-center gap-4">
+            {/* Elementos de búsqueda y campana eliminados para una vista más limpia */}
           </div>
         </header>
 
