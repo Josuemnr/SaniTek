@@ -12,7 +12,7 @@ import {
 } from '@/Components/modules/filtrar-alcaldias/alcaldias-filter-data';
 import { useRiskStore } from '@/store/useRiskStore';
 
-const CACHE_KEY_PREFIX = 'sanitek:alcaldias-irsa-cache:v3';
+const CACHE_KEY_PREFIX = 'sanitek:alcaldias-irsa-cache:v4';
 const CACHE_TTL_MS = 10 * 60 * 1000;
 
 interface AlcaldiasCache {

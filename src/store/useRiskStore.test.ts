@@ -31,7 +31,7 @@ describe('useRiskStore', () => {
   });
 
   it('should set alcaldiaIdMap', () => {
-    const map = { Coyoacan: 62, 'Benito Juarez': 60 };
+    const map = { Coyoacan: 6, 'Benito Juarez': 4 };
     useRiskStore.getState().setAlcaldiaIdMap(map);
     expect(useRiskStore.getState().alcaldiaIdMap).toEqual(map);
   });
