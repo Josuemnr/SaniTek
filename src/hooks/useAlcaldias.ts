@@ -130,6 +130,51 @@ function saveCache(dayOffset: number, cache: AlcaldiasCache) {
   }
 }
 
+function mapStaleZonas(municipalities: any[]): Zona[] {
+  return municipalities
+    .filter((m) => m.currentIrsa)
+    .map((m) => {
+      const nombre = NOMBRE_NORMALIZADO[m.municipalityName] ?? m.municipalityName;
+      return {
+        id:          String(m.id),
+        nombre,
+        alcaldia:    nombre,
+        riskLevel:   riskLevelToZona(m.currentIrsa?.riskLevel ?? ''),
+        calidadAire: Math.round(m.currentIrsa?.irsaValue ?? 0),
+        humedad:     HUMEDAD_TIPICA[nombre] ?? 60,
+      };
+    });
+}
+
+function mapRealtimeZonas(
+  municipalities: any[], 
+  diagResults: PromiseSettledResult<IrsaDiagnosticApiResponse>[]
+): Zona[] {
+  return municipalities
+    .map((m, i) => {
+      const result = diagResults[i];
+      if (result.status === 'fulfilled') {
+        const diag = result.value;
+        return {
+          ...diagToZona(m, diag),
+          _fullDiagnostic: diag
+        };
+      }
+
+      if (!m.currentIrsa) return null;
+      const nombre = NOMBRE_NORMALIZADO[m.municipalityName] ?? m.municipalityName;
+      return {
+        id:          String(m.id),
+        nombre,
+        alcaldia:    nombre,
+        riskLevel:   riskLevelToZona(m.currentIrsa.riskLevel),
+        calidadAire: Math.round(m.currentIrsa.irsaValue ?? 0),
+        humedad:     HUMEDAD_TIPICA[nombre] ?? 60,
+      } satisfies Zona;
+    })
+    .filter((z): z is Zona => z !== null);
+}
+
 async function loadAlcaldiasIrsa(dayOffset: number): Promise<AlcaldiasCache> {
   const cached = readCache(dayOffset);
   if (cached) return cached;
@@ -140,59 +185,20 @@ async function loadAlcaldiasIrsa(dayOffset: number): Promise<AlcaldiasCache> {
   if (dayOffset < 0) {
     const load = loadTimelineSnapshot(Math.abs(dayOffset));
     inFlightLoads.set(key, load);
-    load.finally(() => {
-      inFlightLoads.delete(key);
-    });
+    load.finally(() => { inFlightLoads.delete(key); });
     return load;
   }
 
   const load = api.municipalities.listAll()
     .then(async (municipalities) => {
       const idMap = buildIdMap(municipalities);
-
-      const staleZonas: Zona[] = municipalities
-        .filter((m) => m.currentIrsa)
-        .map((m) => {
-          const nombre = NOMBRE_NORMALIZADO[m.municipalityName] ?? m.municipalityName;
-          return {
-            id:          String(m.id),
-            nombre,
-            alcaldia:    nombre,
-            riskLevel:   riskLevelToZona(m.currentIrsa?.riskLevel ?? ''),
-            calidadAire: Math.round(m.currentIrsa?.irsaValue ?? 0),
-            humedad:     HUMEDAD_TIPICA[nombre] ?? 60,
-          };
-        });
+      const staleZonas = mapStaleZonas(municipalities);
 
       const diagResults = await Promise.allSettled(
         municipalities.map((m) => api.irsa.diagnostic(m.id))
       );
 
-      const realtimeZonas: any[] = municipalities
-        .map((m, i) => {
-          const result = diagResults[i];
-          if (result.status === 'fulfilled') {
-            const diag = result.value;
-            const nombre = NOMBRE_NORMALIZADO[m.municipalityName] ?? m.municipalityName;
-            return {
-              ...diagToZona(m, diag),
-              // Guardamos el raw para el panel de información
-              _fullDiagnostic: diag
-            };
-          }
-
-          if (!m.currentIrsa) return null;
-          const nombre = NOMBRE_NORMALIZADO[m.municipalityName] ?? m.municipalityName;
-          return {
-            id:          String(m.id),
-            nombre,
-            alcaldia:    nombre,
-            riskLevel:   riskLevelToZona(m.currentIrsa.riskLevel),
-            calidadAire: Math.round(m.currentIrsa.irsaValue ?? 0),
-            humedad:     HUMEDAD_TIPICA[nombre] ?? 60,
-          } satisfies Zona;
-        })
-        .filter((z): z is Zona => z !== null);
+      const realtimeZonas = mapRealtimeZonas(municipalities, diagResults);
 
       const cache: AlcaldiasCache = {
         savedAt: Date.now(),
