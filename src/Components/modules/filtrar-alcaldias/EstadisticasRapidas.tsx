@@ -47,18 +47,18 @@ export function EstadisticasRapidas({
   const values = { criticas, altoRiesgo, seguras, poblacion };
 
   return (
-    <div className="w-72 shrink-0 bg-white rounded-xl border border-gray-200 p-5 flex flex-col gap-4 h-fit">
+    <div data-testid="estadisticas-rapidas" className="w-72 shrink-0 bg-white rounded-xl border border-gray-200 p-5 flex flex-col gap-4 h-fit">
       <h3 className="text-sm font-bold text-gray-800">Estadísticas Rápidas</h3>
       <div className="flex flex-col gap-3">
         {STATS.map(({ key, label, icon: Icon, iconClass, bgClass }) => (
-          <div key={key} className="flex items-center justify-between">
+          <div key={key} data-testid={`stat-${key}`} className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${bgClass}`}>
                 <Icon className={`w-4 h-4 ${iconClass}`} />
               </div>
               <span className="text-sm text-gray-600">{label}</span>
             </div>
-            <span className="text-sm font-bold text-gray-800">{values[key]}</span>
+            <span data-testid={`stat-value-${key}`} className="text-sm font-bold text-gray-800">{values[key]}</span>
           </div>
         ))}
       </div>

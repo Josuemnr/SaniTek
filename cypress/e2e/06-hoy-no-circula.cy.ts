@@ -28,7 +28,11 @@ describe('Hoy No Circula', () => {
           $body.text().includes('Abril') ||
           $body.text().includes('Mayo') ||
           $body.text().includes('Junio');
+<<<<<<< HEAD
         expect(hasCalendar).to.equal(true);
+=======
+        expect(hasCalendar).to.be.true;
+>>>>>>> f4186ec9f9b15c6c5d930c338234f574f6721f9f
       });
     });
 
@@ -64,7 +68,11 @@ describe('Hoy No Circula', () => {
       cy.get('body').then($body => {
         const text = $body.text();
         const hasHologram = text.includes('Holograma') || text.includes('00') || text.includes('0') || text.includes('Doble');
+<<<<<<< HEAD
         expect(hasHologram).to.equal(true);
+=======
+        expect(hasHologram).to.be.true;
+>>>>>>> f4186ec9f9b15c6c5d930c338234f574f6721f9f
       });
     });
 
@@ -73,7 +81,11 @@ describe('Hoy No Circula', () => {
       cy.get('body').then($body => {
         const text = $body.text();
         const hasPlacas = text.includes('Placa') || text.includes('placa') || text.includes('Termina');
+<<<<<<< HEAD
         expect(hasPlacas).to.equal(true);
+=======
+        expect(hasPlacas).to.be.true;
+>>>>>>> f4186ec9f9b15c6c5d930c338234f574f6721f9f
       });
     });
   });

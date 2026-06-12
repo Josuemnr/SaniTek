@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 type IrsaEntry = { irsa: number; nivel: string };
 
 function nivelToColor(nivel: string | undefined): string {
+<<<<<<< HEAD
   switch (nivel?.trim().toLowerCase()) {
     case "seguro":
       return "#22c55e";
@@ -22,10 +23,18 @@ function nivelToColor(nivel: string | undefined): string {
       return "#ef4444";
     default:
       return "#6b7280";
+=======
+  switch (nivel) {
+    case "seguro":   return "#22c55e";  // verde  — IRSA 0-40
+    case "moderado": return "#eab308";  // amarillo — IRSA 41-70
+    case "alto":     return "#ef4444";  // rojo   — IRSA 71-100
+    default:         return "#6b7280";
+>>>>>>> f4186ec9f9b15c6c5d930c338234f574f6721f9f
   }
 }
 
 function nivelToLabel(nivel: string | undefined): string {
+<<<<<<< HEAD
   switch (nivel?.trim().toLowerCase()) {
     case "seguro":
       return "IRSA Bajo";
@@ -36,6 +45,13 @@ function nivelToLabel(nivel: string | undefined): string {
       return "IRSA Alto";
     default:
       return "Sin datos";
+=======
+  switch (nivel) {
+    case "seguro":   return "Bajo";
+    case "moderado": return "Regular";
+    case "alto":     return "Alto";
+    default:         return "Sin datos";
+>>>>>>> f4186ec9f9b15c6c5d930c338234f574f6721f9f
   }
 }
 
@@ -172,10 +188,16 @@ export function CdmxLeafletMap() {
 
     layer.bindPopup(
       () => {
+<<<<<<< HEAD
         const entry = getIrsaEntry(name, irsaRef.current);
         const color = nivelToColor(entry?.nivel);
         const label = nivelToLabel(entry?.nivel);
 
+=======
+        const entry     = irsaRef.current[name];
+        const color     = nivelToColor(entry?.nivel);
+        const label     = nivelToLabel(entry?.nivel);
+>>>>>>> f4186ec9f9b15c6c5d930c338234f574f6721f9f
         return `
           <div style="min-width:155px;font-family:system-ui,sans-serif;padding:2px">
             <p style="font-weight:700;font-size:13px;margin:0 0 4px">${name}</p>
@@ -235,11 +257,19 @@ export function CdmxLeafletMap() {
         <FlyToAlcaldia />
       </MapContainer>
 
+<<<<<<< HEAD
+=======
+      {/* Overlay mientras se calculan los diagnósticos de todas las alcaldías */}
+>>>>>>> f4186ec9f9b15c6c5d930c338234f574f6721f9f
       {loading && (
         <div className="absolute inset-0 z-[1000] flex flex-col items-center justify-center bg-background/75 backdrop-blur-sm">
           <Loader2 className="h-10 w-10 animate-spin text-primary" />
           <p className="mt-3 text-sm font-medium text-muted-foreground">
+<<<<<<< HEAD
             Calculando indices IRSA...
+=======
+            Calculando índices IRSA…
+>>>>>>> f4186ec9f9b15c6c5d930c338234f574f6721f9f
           </p>
         </div>
       )}

@@ -1,16 +1,21 @@
 import { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import {
   api,
   CDMX_MUNICIPALITY_IDS,
   type IrsaDiagnosticApiResponse,
   type IrsaTimelineMunicipalityPointApi,
 } from '@/Services/backendApi';
+=======
+import { api, type IrsaDiagnosticApiResponse } from '@/Services/backendApi';
+>>>>>>> f4186ec9f9b15c6c5d930c338234f574f6721f9f
 import {
   ZONAS_MOCK,
   type Zona,
   type RiskLevel,
 } from '@/Components/modules/filtrar-alcaldias/alcaldias-filter-data';
 import { useRiskStore } from '@/store/useRiskStore';
+<<<<<<< HEAD
 
 const CACHE_KEY_PREFIX = 'sanitek:alcaldias-irsa-cache:v3';
 const CACHE_TTL_MS = 10 * 60 * 1000;
@@ -23,6 +28,8 @@ interface AlcaldiasCache {
 
 const memoryCache = new Map<string, AlcaldiasCache>();
 const inFlightLoads = new Map<string, Promise<AlcaldiasCache>>();
+=======
+>>>>>>> f4186ec9f9b15c6c5d930c338234f574f6721f9f
 
 const NOMBRE_NORMALIZADO: Record<string, string> = {
   'Alvaro Obregon': 'Álvaro Obregón',
@@ -53,7 +60,11 @@ const HUMEDAD_TIPICA: Record<string, number> = {
   'Xochimilco':             80,
 };
 
+<<<<<<< HEAD
 // El backend usa: LOW (<=30) | MODERATE (<=50) | HIGH (>50)
+=======
+// El backend usa: LOW (0-40) | MODERATE (41-70) | HIGH (71-100)
+>>>>>>> f4186ec9f9b15c6c5d930c338234f574f6721f9f
 function riskLevelToZona(level: string): RiskLevel {
   switch (level.trim().toUpperCase()) {
     case 'LOW':      return 'seguro';
@@ -77,6 +88,7 @@ function diagToZona(m: { id: number; municipalityName: string }, diag: IrsaDiagn
   };
 }
 
+<<<<<<< HEAD
 function timelinePointToZona(
   point: IrsaTimelineMunicipalityPointApi
 ): Zona {
@@ -251,6 +263,8 @@ function buildIdMap(municipalities: { id: number; municipalityName: string }[]) 
   return idMap;
 }
 
+=======
+>>>>>>> f4186ec9f9b15c6c5d930c338234f574f6721f9f
 export function useAlcaldias() {
   const selectedDayOffset    = useRiskStore((s) => s.selectedDayOffset);
   const setAlcaldiasSnapshot = useRiskStore((s) => s.setAlcaldiasSnapshot);
@@ -259,9 +273,11 @@ export function useAlcaldias() {
   const cached = readCache(selectedDayOffset);
   const [zonas, setZonas]     = useState<Zona[]>(cached?.zonas ?? ZONAS_MOCK);
   const [loading, setLoading] = useState(false);
+  const setAlcaldiaIdMap      = useRiskStore((s) => s.setAlcaldiaIdMap);
 
   useEffect(() => {
     let cancelled = false;
+<<<<<<< HEAD
 
     const updateGlobalData = (result: AlcaldiasCache) => {
       setZonas(result.zonas);
@@ -287,6 +303,66 @@ export function useAlcaldias() {
       .then((result) => {
         if (cancelled) return;
         updateGlobalData(result);
+=======
+    setLoading(true);
+
+    api.municipalities.listAll()
+      .then(async (municipalities) => {
+        if (cancelled) return;
+
+        // ── 1. Construir el mapa nombre → id ────────────────────────────────
+        const idMap: Record<string, number> = {};
+        for (const m of municipalities) {
+          const nombre = NOMBRE_NORMALIZADO[m.municipalityName] ?? m.municipalityName;
+          idMap[nombre]             = m.id;
+          idMap[m.municipalityName] = m.id;
+        }
+        setAlcaldiaIdMap(idMap);
+
+        // ── 2. Fase 1: mostrar datos del mapa con valores almacenados (rápido)
+        const staleZonas: Zona[] = municipalities
+          .filter((m) => m.currentIrsa)
+          .map((m) => {
+            const nombre = NOMBRE_NORMALIZADO[m.municipalityName] ?? m.municipalityName;
+            return {
+              id:          String(m.id),
+              nombre,
+              alcaldia:    nombre,
+              riskLevel:   riskLevelToZona(m.currentIrsa?.riskLevel ?? ''),
+              calidadAire: Math.round(m.currentIrsa?.irsaValue ?? 0),
+              humedad:     HUMEDAD_TIPICA[nombre] ?? 60,
+            };
+          });
+        if (!cancelled && staleZonas.length > 0) setZonas(staleZonas);
+
+        // ── 3. Fase 2: cargar diagnósticos en paralelo (fuente de verdad) ───
+        const diagResults = await Promise.allSettled(
+          municipalities.map((m) => api.irsa.diagnostic(m.id))
+        );
+        if (cancelled) return;
+
+        const realtimeZonas: Zona[] = municipalities
+          .map((m, i) => {
+            const result = diagResults[i];
+            if (result.status === 'fulfilled') {
+              return diagToZona(m, result.value);
+            }
+            // Si el diagnóstico falló, usar valor almacenado como respaldo
+            if (!m.currentIrsa) return null;
+            const nombre = NOMBRE_NORMALIZADO[m.municipalityName] ?? m.municipalityName;
+            return {
+              id:          String(m.id),
+              nombre,
+              alcaldia:    nombre,
+              riskLevel:   riskLevelToZona(m.currentIrsa.riskLevel),
+              calidadAire: Math.round(m.currentIrsa.irsaValue ?? 0),
+              humedad:     HUMEDAD_TIPICA[nombre] ?? 60,
+            } satisfies Zona;
+          })
+          .filter((z): z is Zona => z !== null);
+
+        if (realtimeZonas.length > 0) setZonas(realtimeZonas);
+>>>>>>> f4186ec9f9b15c6c5d930c338234f574f6721f9f
       })
       .catch((err) => {
         console.error('[useAlcaldias] error al obtener datos:', err);
@@ -295,7 +371,11 @@ export function useAlcaldias() {
       .finally(() => { if (!cancelled) setLoading(false); });
 
     return () => { cancelled = true; };
+<<<<<<< HEAD
   }, [selectedDayOffset, setAlcaldiaIdMap, setAlcaldiasSnapshot]);
+=======
+  }, [setAlcaldiaIdMap]);
+>>>>>>> f4186ec9f9b15c6c5d930c338234f574f6721f9f
 
   return { zonas, loading };
 }

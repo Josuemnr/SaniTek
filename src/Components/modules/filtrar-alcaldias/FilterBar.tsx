@@ -16,7 +16,7 @@ interface FilterBarProps {
 
 export function FilterBar({ activeFilters, onToggleFilter, onClear }: FilterBarProps) {
   return (
-    <div className="flex items-center gap-3 flex-wrap">
+    <div data-testid="filter-bar" className="flex items-center gap-3 flex-wrap">
       <Button size="sm" className="gap-2 shrink-0" disabled>
         <SlidersHorizontal className="w-4 h-4" />
         Filtrar
@@ -28,6 +28,7 @@ export function FilterBar({ activeFilters, onToggleFilter, onClear }: FilterBarP
         return (
           <button
             key={filter}
+            data-testid={`filter-btn-${filter}`}
             onClick={() => onToggleFilter(filter)}
             className={cn(
               "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors",
@@ -46,6 +47,7 @@ export function FilterBar({ activeFilters, onToggleFilter, onClear }: FilterBarP
         <Button
           variant="ghost"
           size="sm"
+          data-testid="filter-clear-btn"
           className="gap-1.5 text-gray-500 hover:text-red-500 px-2"
           onClick={onClear}
         >
