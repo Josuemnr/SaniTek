@@ -9,12 +9,12 @@ describe('Navbar Component', () => {
     expect(logo).toBeInTheDocument();
   });
 
-  it('renders navigation links: Mapa, Historial, Hoy NO circula, administración (NAV-02)', () => {
+  it('renders navigation links: Mapa, Historial, Hoy no Circula, Alertas (NAV-02)', () => {
     render(<Navbar />);
     expect(screen.getByText(/mapa/i)).toBeInTheDocument();
     expect(screen.getByText(/historial/i)).toBeInTheDocument();
     expect(screen.getByText(/hoy no circula/i)).toBeInTheDocument();
-    expect(screen.getByText(/administración/i)).toBeInTheDocument();
+    expect(screen.getByText(/alertas/i)).toBeInTheDocument();
   });
 
   it('renders search input and allows typing (NAV-03)', () => {

@@ -30,3 +30,11 @@ dist-ssr
 
 *storybook.log
 storybook-static
+
+# Cypress
+cypress/screenshots
+cypress/videos
+cypress.env.json
+
+# Test coverage
+coverage/

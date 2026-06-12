@@ -16,7 +16,7 @@ export function MetricsRow({ metricas }: MetricsRowProps) {
   const tendenciaColor = tendencia === "Positiva" ? "text-emerald-600" : "text-red-500";
 
   return (
-    <div className="flex gap-4 shrink-0">
+    <div data-testid="metrics-row" className="flex gap-4 shrink-0">
       <MetricCard
         label="Índice Actual"
         value={indiceActual}

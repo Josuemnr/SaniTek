@@ -16,7 +16,35 @@ export interface DetalleAlcaldia {
   variables: VariableCritica;
 }
 
-// Escala 0-100 (consistente con el backend: valorIrsa × 100)
+// Humedad típica por alcaldía (no disponible en el backend — valor estimado regional)
+export const HUMEDAD_TIPICA: Record<string, number> = {
+  'Alvaro Obregon':         52,
+  'Álvaro Obregón':         52,
+  'Azcapotzalco':           60,
+  'Benito Juarez':          55,
+  'Benito Juárez':          55,
+  'Coyoacan':               65,
+  'Coyoacán':               65,
+  'Cuajimalpa':             70,
+  'Cuajimalpa de Morelos':  70,
+  'Cuauhtemoc':             58,
+  'Cuauhtémoc':             58,
+  'Gustavo A. Madero':      62,
+  'Iztacalco':              68,
+  'Iztapalapa':             70,
+  'La Magdalena Contreras': 72,
+  'Magdalena Contreras':    72,
+  'Miguel Hidalgo':         50,
+  'Milpa Alta':             72,
+  'Tlahuac':                75,
+  'Tláhuac':                75,
+  'Tlalpan':                80,
+  'Venustiano Carranza':    45,
+  'Xochimilco':             80,
+};
+
+// Datos de referencia usados SOLO cuando el backend no responde.
+// Escala 0-100 (consistente con el backend: irsaScore ya está en 0-100)
 const DATA: Record<string, DetalleAlcaldia> = {
   "Álvaro Obregón":          { nombre: "Álvaro Obregón",          ciudad: "Ciudad de México, México", irsa: 41, irsaMax: 100, irsaDescripcion: "Riesgo moderado, monitoreo continuo recomendado", variables: { temperatura: 22, humedad: 58, calidadAire: 52, riesgoTemperatura: "Óptimo"   } },
   "Azcapotzalco":            { nombre: "Azcapotzalco",            ciudad: "Ciudad de México, México", irsa: 58, irsaMax: 100, irsaDescripcion: "Nivel de riesgo elevado, atención prioritaria",   variables: { temperatura: 26, humedad: 50, calidadAire: 68, riesgoTemperatura: "Moderado" } },
@@ -49,18 +77,17 @@ export function getDetalleAlcaldia(nombre: string): DetalleAlcaldia {
   return DATA[nombre] ?? FALLBACK;
 }
 
+// 0-40 verde | 41-70 amarillo | 71-100 rojo
 export function getIrsaColor(irsa: number): string {
   if (irsa <= 40) return "text-emerald-500";
-  if (irsa <= 60) return "text-yellow-500";
-  if (irsa <= 80) return "text-orange-500";
-  return "text-red-600";
+  if (irsa <= 70) return "text-yellow-500";
+  return "text-red-500";
 }
 
 // Clases bg como literales para que Tailwind las incluya en el bundle
 export function getIrsaBgColor(irsa: number): string {
   if (irsa <= 40) return "bg-emerald-500";
-  if (irsa <= 60) return "bg-yellow-400";
-  if (irsa <= 80) return "bg-orange-500";
+  if (irsa <= 70) return "bg-yellow-400";
   return "bg-red-500";
 }
 

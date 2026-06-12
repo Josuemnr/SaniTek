@@ -7,9 +7,9 @@ interface AlcaldiasListProps {
 
 export function AlcaldiasList({ zonas }: AlcaldiasListProps) {
   return (
-    <div className="flex-1 bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col">
+    <div data-testid="alcaldias-list" className="flex-1 bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col">
       {zonas.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center text-sm text-gray-400">
+        <div data-testid="alcaldias-empty" className="flex-1 flex items-center justify-center text-sm text-gray-400">
           No hay zonas que coincidan con los filtros seleccionados.
         </div>
       ) : (

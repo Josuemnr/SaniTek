@@ -1,0 +1,23 @@
+{
+  "entryPoints": ["src/Services/backendApi.ts"],
+  "out": "docs-api",
+  "name": "SaniTek – API Client",
+  "readme": "none",
+  "includeVersion": true,
+  "skipErrorChecking": true,
+  "plugin": [],
+  "navigationLinks": {
+    "GitHub": "https://github.com/Josuemnr/SaniTek_Frontend"
+  },
+  "categorizeByGroup": true,
+  "groupOrder": [
+    "Interfaces",
+    "Type Aliases",
+    "Variables",
+    "Functions",
+    "*"
+  ],
+  "exclude": ["**/*.test.ts", "**/*.stories.*"],
+  "tsconfig": "./tsconfig.app.json",
+  "blockTags": ["@file", "@description", "@param", "@returns", "@example", "@remarks", "@deprecated", "@throws", "@module"]
+}
